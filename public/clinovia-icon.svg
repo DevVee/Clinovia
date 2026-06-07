@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Outer circle gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a56db;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="hand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="50" fill="url(#bg)"/>
+
+  <!-- White medical cross -->
+  <rect x="38" y="22" width="24" height="56" rx="4" fill="white" opacity="0.95"/>
+  <rect x="22" y="38" width="56" height="24" rx="4" fill="white" opacity="0.95"/>
+
+  <!-- Heartbeat line through cross (teal) -->
+  <polyline points="26,50 34,50 38,42 42,58 46,46 50,54 54,50 74,50"
+            fill="none" stroke="url(#hand)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Graduation cap on top of cross -->
+  <polygon points="50,16 62,22 50,28 38,22" fill="#1e3a8a" opacity="0.9"/>
+  <rect x="58" y="22" width="2" height="8" rx="1" fill="#1e3a8a" opacity="0.9"/>
+  <circle cx="59" cy="31" r="2.5" fill="#1e3a8a" opacity="0.9"/>
+</svg>
