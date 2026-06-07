@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // ── Groq AI (Cobi assistant) ──────────────────────────────────────────────
+    // SECURITY FIX: Moved from env() calls in the service class to config()
+    // so it works correctly after `php artisan config:cache` in production.
+    'groq' => [
+        'api_key' => env('GROQ_API_KEY'),
+        'api_url' => env('GROQ_API_URL', 'https://api.groq.com/openai/v1/chat/completions'),
+    ],
+
 ];

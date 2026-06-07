@@ -9,6 +9,13 @@ class AiConversation extends Model
 {
     protected $fillable = ['user_id', 'message', 'response', 'tokens_used'];
 
+    /**
+     * LOW-3 FIX: Hide message/response from accidental JSON serialization
+     * (e.g. when the model is passed to API responses or logged).
+     * These fields contain user queries that may include sensitive references.
+     */
+    protected $hidden = ['message', 'response'];
+
     protected function casts(): array
     {
         return [

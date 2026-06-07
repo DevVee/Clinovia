@@ -47,7 +47,10 @@ return [
     |
     */
 
-    'encrypt' => env('SESSION_ENCRYPT', false),
+    // SECURITY FIX: Encrypt session data at rest in the database.
+    // Anyone with DB read access cannot read active session tokens.
+    // Set SESSION_ENCRYPT=false only for local development if needed.
+    'encrypt' => env('SESSION_ENCRYPT', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +172,9 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // SECURITY FIX: Default to true so session cookies are HTTPS-only.
+    // Set SESSION_SECURE_COOKIE=false in .env only for local HTTP development.
+    'secure' => env('SESSION_SECURE_COOKIE', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -199,7 +204,9 @@ return [
     |
     */
 
-    'same_site' => env('SESSION_SAME_SITE', 'lax'),
+    // SECURITY FIX: Stricter SameSite policy for a closed-staff system with no
+    // cross-origin form submissions. 'strict' prevents CSRF via any cross-site nav.
+    'same_site' => env('SESSION_SAME_SITE', 'strict'),
 
     /*
     |--------------------------------------------------------------------------

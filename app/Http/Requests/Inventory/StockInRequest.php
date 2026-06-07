@@ -17,9 +17,18 @@ class StockInRequest extends FormRequest
             'medicine_id'     => ['required', 'integer', 'exists:medicines,id'],
             'quantity'        => ['required', 'integer', 'min:1'],
             'batch_number'    => ['nullable', 'string', 'max:100'],
-            'expiration_date' => ['nullable', 'date'],
+            // MED-2 FIX: Prevent stocking in already-expired medicines.
+            // after:today ensures the expiry date is in the future.
+            'expiration_date' => ['nullable', 'date', 'after:today'],
             'supplier'        => ['nullable', 'string', 'max:200'],
             'notes'           => ['nullable', 'string', 'max:500'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'expiration_date.after' => 'The expiration date must be a future date. Expired medicines cannot be stocked in.',
         ];
     }
 

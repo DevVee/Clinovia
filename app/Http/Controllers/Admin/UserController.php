@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreUserRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Services\AuditLogService;
@@ -44,17 +46,13 @@ class UserController extends Controller
         return view('admin.users.create', compact('roles'));
     }
 
-    public function store(Request $request)
+    /**
+     * HIGH-5 FIX: Replaced inline validate() with StoreUserRequest which enforces
+     * a strong password policy (10+ chars, mixed case, numbers, symbols, breach check).
+     */
+    public function store(StoreUserRequest $request)
     {
-        $this->authorize('manage-users');
-
-        $data = $request->validate([
-            'name'                  => ['required', 'string', 'max:255'],
-            'email'                 => ['required', 'email', 'unique:users,email'],
-            'password'              => ['required', 'min:8', 'confirmed'],
-            'role'                  => ['required', 'exists:roles,name'],
-            'is_active'             => ['boolean'],
-        ]);
+        $data = $request->validated();
 
         $user = User::create([
             'name'      => $data['name'],
@@ -64,7 +62,11 @@ class UserController extends Controller
         ]);
         $user->assignRole($data['role']);
 
-        AuditLogService::log('created', 'users', "Created user: {$user->name} ({$user->email}) with role {$data['role']}");
+        AuditLogService::log(
+            'created',
+            'users',
+            "Created user: {$user->name} ({$user->email}) with role {$data['role']}"
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', "User {$user->name} created successfully.");
@@ -89,17 +91,42 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
-    public function update(Request $request, User $user)
+    /**
+     * HIGH-5 FIX: Uses UpdateUserRequest with strong password policy.
+     * MED-4 FIX: Cannot remove the last active administrator.
+     */
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $this->authorize('manage-users');
+        $data = $request->validated();
 
-        $data = $request->validate([
-            'name'                  => ['required', 'string', 'max:255'],
-            'email'                 => ['required', 'email', "unique:users,email,{$user->id}"],
-            'password'              => ['nullable', 'min:8', 'confirmed'],
-            'role'                  => ['required', 'exists:roles,name'],
-            'is_active'             => ['boolean'],
-        ]);
+        // MED-4 FIX: Prevent removing the last active administrator account
+        if ($user->hasRole('administrator') && $data['role'] !== 'administrator') {
+            $adminCount = User::role('administrator')
+                ->where('is_active', true)
+                ->where('id', '!=', $user->getKey())
+                ->count();
+
+            if ($adminCount === 0) {
+                return back()->withErrors(['role' =>
+                    'Cannot change the role of the last active administrator.'
+                ]);
+            }
+        }
+
+        // Also guard against deactivating the last admin
+        $isBeingDeactivated = $user->is_active && ! $request->boolean('is_active', true);
+        if ($user->hasRole('administrator') && $isBeingDeactivated) {
+            $adminCount = User::role('administrator')
+                ->where('is_active', true)
+                ->where('id', '!=', $user->getKey())
+                ->count();
+
+            if ($adminCount === 0) {
+                return back()->withErrors(['is_active' =>
+                    'Cannot deactivate the last active administrator.'
+                ]);
+            }
+        }
 
         $old = $user->only('name', 'email', 'is_active');
 
@@ -115,18 +142,43 @@ class UserController extends Controller
 
         $user->syncRoles([$data['role']]);
 
-        AuditLogService::log('updated', 'users', "Updated user: {$user->name}", $old, $user->fresh()->only('name', 'email', 'is_active'));
+        AuditLogService::log(
+            'updated',
+            'users',
+            "Updated user: {$user->name}",
+            $old,
+            $user->fresh()->only('name', 'email', 'is_active')
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', "User {$user->name} updated successfully.");
     }
 
+    /**
+     * MED-4 FIX: Prevents deleting the last active administrator account,
+     * which would lock everyone out of the system.
+     */
     public function destroy(User $user)
     {
         $this->authorize('manage-users');
 
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account.');
+        }
+
+        // Guard: ensure at least one other active administrator remains
+        if ($user->hasRole('administrator')) {
+            $remainingAdmins = User::role('administrator')
+                ->where('is_active', true)
+                ->where('id', '!=', $user->getKey())
+                ->count();
+
+            if ($remainingAdmins === 0) {
+                return back()->with('error',
+                    'Cannot delete the last administrator account. ' .
+                    'Promote another user to administrator first.'
+                );
+            }
         }
 
         $name = $user->name;

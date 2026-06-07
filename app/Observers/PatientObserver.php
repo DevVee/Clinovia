@@ -7,13 +7,35 @@ use App\Services\AuditLogService;
 
 class PatientObserver
 {
+    /**
+     * HIGH-7 FIX: Sensitive PHI fields are excluded from audit log new/old values.
+     * The description still records who was affected; the sensitive clinical and
+     * contact details are omitted so audit_logs are not a PHI data store.
+     * Medical staff with full access view PHI through the patient record itself.
+     */
+    private const SENSITIVE_FIELDS = [
+        'blood_type', 'allergies', 'medical_conditions', 'notes',
+        'guardian_name', 'guardian_relationship', 'guardian_contact', 'guardian_address',
+        'emergency_contact_name', 'emergency_contact_number',
+        'contact_number', 'email', 'address',
+    ];
+
+    private function sanitize(array $data): array
+    {
+        $filtered = array_diff_key($data, array_flip(self::SENSITIVE_FIELDS));
+        if (count($data) !== count($filtered)) {
+            $filtered['_phi_fields_omitted'] = true;
+        }
+        return $filtered;
+    }
+
     public function created(Patient $patient): void
     {
         AuditLogService::log(
             action: 'created',
             module: 'patients',
             description: "Created patient: {$patient->full_name} ({$patient->patient_number})",
-            newValues: $patient->toArray(),
+            newValues: $this->sanitize($patient->toArray()),
         );
     }
 
@@ -31,8 +53,8 @@ class PatientObserver
             action: 'updated',
             module: 'patients',
             description: "Updated patient: {$patient->full_name} ({$patient->patient_number})",
-            oldValues: $old,
-            newValues: $dirty,
+            oldValues: $this->sanitize($old),
+            newValues: $this->sanitize($dirty),
         );
     }
 
@@ -42,14 +64,13 @@ class PatientObserver
             action: 'deleted',
             module: 'patients',
             description: "Deleted patient: {$patient->full_name} ({$patient->patient_number})",
-            oldValues: $patient->toArray(),
         );
     }
 
     public function restored(Patient $patient): void
     {
         AuditLogService::log(
-            action: 'updated',
+            action: 'restored',
             module: 'patients',
             description: "Restored patient: {$patient->full_name} ({$patient->patient_number})",
         );

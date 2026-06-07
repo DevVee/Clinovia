@@ -10,42 +10,50 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Administrator
+        // SECURITY FIX: Default credentials are now driven by .env so they are
+        // never committed to version control in plaintext.
+        // Set ADMIN_EMAIL / ADMIN_PASSWORD / NURSE_EMAIL / etc. before seeding.
+        // Falls back to safe placeholder values that MUST be changed before go-live.
+
+        // ── Administrator ─────────────────────────────────────────────────────
         $admin = User::firstOrCreate(
-            ['email' => 'admin@iccbi.edu.ph'],
+            ['email' => env('ADMIN_EMAIL', 'admin@iccbi.edu.ph')],
             [
-                'name'      => 'System Administrator',
-                'password'  => Hash::make('Admin@2026!'),
-                'is_active' => true,
-                'email_verified_at' => now(),
+                'name'               => env('ADMIN_NAME', 'System Administrator'),
+                'password'           => Hash::make(env('ADMIN_PASSWORD', 'ChangeMe@' . now()->year . '!')),
+                'is_active'          => true,
+                'email_verified_at'  => now(),
             ]
         );
-        $admin->assignRole('administrator');
+        $admin->syncRoles('administrator');
 
-        // Demo Nurse
+        // ── Demo Nurse ────────────────────────────────────────────────────────
         $nurse = User::firstOrCreate(
-            ['email' => 'nurse@iccbi.edu.ph'],
+            ['email' => env('NURSE_EMAIL', 'nurse@iccbi.edu.ph')],
             [
-                'name'      => 'Demo Nurse',
-                'password'  => Hash::make('Nurse@2026!'),
-                'is_active' => true,
-                'email_verified_at' => now(),
+                'name'               => env('NURSE_NAME', 'Demo Nurse'),
+                'password'           => Hash::make(env('NURSE_PASSWORD', 'ChangeMe@' . now()->year . '!')),
+                'is_active'          => true,
+                'email_verified_at'  => now(),
             ]
         );
-        $nurse->assignRole('nurse');
+        $nurse->syncRoles('nurse');
 
-        // Demo Staff
+        // ── Demo Staff ────────────────────────────────────────────────────────
         $staff = User::firstOrCreate(
-            ['email' => 'staff@iccbi.edu.ph'],
+            ['email' => env('STAFF_EMAIL', 'staff@iccbi.edu.ph')],
             [
-                'name'      => 'Demo Staff',
-                'password'  => Hash::make('Staff@2026!'),
-                'is_active' => true,
-                'email_verified_at' => now(),
+                'name'               => env('STAFF_NAME', 'Demo Staff'),
+                'password'           => Hash::make(env('STAFF_PASSWORD', 'ChangeMe@' . now()->year . '!')),
+                'is_active'          => true,
+                'email_verified_at'  => now(),
             ]
         );
-        $staff->assignRole('staff');
+        $staff->syncRoles('staff');
 
-        $this->command->info('Users seeded: admin@iccbi.edu.ph / Admin@2026!');
+        $this->command->info('Seed users created. ⚠️  Change passwords immediately for production!');
+        $this->command->warn('  Admin : ' . env('ADMIN_EMAIL', 'admin@iccbi.edu.ph'));
+        $this->command->warn('  Nurse : ' . env('NURSE_EMAIL', 'nurse@iccbi.edu.ph'));
+        $this->command->warn('  Staff : ' . env('STAFF_EMAIL', 'staff@iccbi.edu.ph'));
     }
 }

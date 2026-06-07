@@ -57,8 +57,11 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $recentActivity = AuditLog::with('user')
-            ->latest()->limit(8)->get();
+        // DASHBOARD FIX: Audit log activity is sensitive — only show to admins.
+        // Non-admin users see an empty collection so the widget is hidden in the view.
+        $recentActivity = auth()->user()?->isAdmin()
+            ? AuditLog::with('user')->latest()->limit(8)->get()
+            : collect();
 
         // Monthly visits chart — last 6 months
         $monthlyData = [];

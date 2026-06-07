@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Repositories\Contracts\PatientRepositoryInterface;
 use App\Services\PatientService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PatientController extends Controller
 {
@@ -48,11 +49,15 @@ class PatientController extends Controller
 
     public function store(StorePatientRequest $request)
     {
-        $data = $request->validated();
-        $data['patient_number'] = $this->service->generatePatientNumber();
-        $data['created_by']     = auth()->id();
+        // CRITICAL-6 FIX: Wrap the entire create+generatePatientNumber in a single
+        // DB transaction so the number generation lock and the INSERT are atomic.
+        $patient = DB::transaction(function () use ($request) {
+            $data = $request->validated();
+            $data['patient_number'] = $this->service->generatePatientNumber();
+            $data['created_by']     = auth()->id();
 
-        $patient = $this->patients->create($data);
+            return $this->patients->create($data);
+        });
 
         return redirect()
             ->route('patients.show', $patient)
@@ -90,7 +95,7 @@ class PatientController extends Controller
 
     public function update(UpdatePatientRequest $request, Patient $patient)
     {
-        $data = $request->validated();
+        $data               = $request->validated();
         $data['updated_by'] = auth()->id();
 
         $this->patients->update($patient, $data);
@@ -120,6 +125,26 @@ class PatientController extends Controller
     /* ------------------------------------------------------------------ */
     public function history(Patient $patient)
     {
+        // Delegates to show() — provides a stable named route for history links
         return $this->show($patient);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  RESTORE  (MED-7 FIX)                                               */
+    /* ------------------------------------------------------------------ */
+    /**
+     * Restore a soft-deleted patient record.
+     * Route uses ->withTrashed() so the model binding resolves deleted records.
+     * Gated on delete-patients permission (same trust level as deletion).
+     */
+    public function restore(Patient $patient)
+    {
+        $this->authorize('delete-patients');
+
+        $patient->restore();
+
+        return redirect()
+            ->route('patients.show', $patient)
+            ->with('success', "Patient {$patient->full_name} has been restored.");
     }
 }

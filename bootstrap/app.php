@@ -11,11 +11,23 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Register custom middleware aliases
+
+        // ── Trust reverse proxy / load balancer (must run first) ─────────────
+        // Ensures Request::ip() returns the real client IP for audit logs and
+        // rate limiting, not the proxy's internal IP.
+        $middleware->prepend(\App\Http\Middleware\TrustProxies::class);
+
+        // ── Security response headers on every web response ───────────────────
+        // Adds CSP, X-Frame-Options, HSTS, etc. to all web responses.
+        $middleware->web(append: [
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
+
+        // ── Register custom middleware aliases ─────────────────────────────────
         $middleware->alias([
-            'check.active' => \App\Http\Middleware\CheckActiveUser::class,
-            'role'         => \Spatie\Permission\Middleware\RoleMiddleware::class,
-            'permission'   => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'check.active'       => \App\Http\Middleware\CheckActiveUser::class,
+            'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
     })

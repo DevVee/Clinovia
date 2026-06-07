@@ -6,94 +6,70 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Clinovia does not expose a self-service /profile route.
+ * User profile management (name, email, password) is handled by the
+ * administrator via Admin → Users → Edit, or via the password-change
+ * form on the login screen.
+ *
+ * These tests verify Clinovia-specific profile-adjacent behaviour.
+ */
 class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    /**
+     * Clinovia has no self-service /profile page — authenticated users
+     * hitting /profile receive a 404.
+     */
+    public function test_no_self_service_profile_route_exists(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_active' => true]);
 
-        $response = $this
-            ->actingAs($user)
-            ->get('/profile');
+        $response = $this->actingAs($user)->get('/profile');
 
-        $response->assertOk();
+        $response->assertStatus(404);
     }
 
-    public function test_profile_information_can_be_updated(): void
+    /**
+     * Authenticated users can change their own password via PUT /password.
+     * Laravel Breeze's PasswordController is still active for this.
+     */
+    public function test_user_can_update_own_password(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_active' => true]);
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
+            ->from('/dashboard')
+            ->put('/password', [
+                'current_password'      => 'password',
+                'password'              => 'NewStr0ng!Pass',
+                'password_confirmation' => 'NewStr0ng!Pass',
             ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $user->refresh();
-
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/dashboard');
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
+    /**
+     * Wrong current password is rejected when updating password.
+     */
+    public function test_correct_current_password_required_for_update(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_active' => true]);
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
+            ->from('/dashboard')
+            ->put('/password', [
+                'current_password'      => 'wrong-password',
+                'password'              => 'NewStr0ng!Pass',
+                'password_confirmation' => 'NewStr0ng!Pass',
             ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->refresh()->email_verified_at);
-    }
-
-    public function test_user_can_delete_their_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
-
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
-    }
-
-    public function test_correct_password_must_be_provided_to_delete_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
-            ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->fresh());
+        // PasswordController uses validateWithBag('updatePassword', ...) so errors
+        // land in the named 'updatePassword' bag, not the default bag.
+        $response->assertSessionHasErrorsIn('updatePassword', 'current_password');
     }
 }

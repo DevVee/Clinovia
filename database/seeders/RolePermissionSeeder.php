@@ -27,6 +27,11 @@ class RolePermissionSeeder extends Seeder
             // Appointments
             'view-appointments', 'create-appointments', 'update-appointments',
             'delete-appointments', 'approve-appointments',
+            // CRITICAL-8 FIX: cancel-appointments is the correct permission for
+            // cancelling. Previously it was defined but assigned to no role, and
+            // AppointmentController::cancel() was checking approve-appointments
+            // instead. Both are now corrected.
+            'cancel-appointments',
 
             // Consultations
             'view-consultations', 'create-consultations', 'update-consultations', 'delete-consultations',
@@ -60,11 +65,13 @@ class RolePermissionSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'administrator', 'guard_name' => 'web']);
         $admin->syncPermissions(Permission::all());
 
-        // Nurse — clinical operations
+        // Nurse — full clinical operations
         $nurse = Role::firstOrCreate(['name' => 'nurse', 'guard_name' => 'web']);
         $nurse->syncPermissions([
             'view-patients', 'create-patients', 'update-patients',
-            'view-appointments', 'create-appointments', 'update-appointments', 'approve-appointments',
+            'view-appointments', 'create-appointments', 'update-appointments',
+            'approve-appointments',
+            'cancel-appointments',   // CRITICAL-8 FIX: nurses can cancel appointments
             'view-consultations', 'create-consultations', 'update-consultations',
             'view-medicines', 'create-medicines', 'update-medicines', 'delete-medicines',
             'view-inventory', 'manage-inventory',
@@ -74,7 +81,7 @@ class RolePermissionSeeder extends Seeder
             'use-ai-assistant',
         ]);
 
-        // Staff — limited access
+        // Staff — limited read + create appointments
         $staff = Role::firstOrCreate(['name' => 'staff', 'guard_name' => 'web']);
         $staff->syncPermissions([
             'view-patients',

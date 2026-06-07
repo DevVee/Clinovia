@@ -112,4 +112,15 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Self-Registration
+    |--------------------------------------------------------------------------
+    | Controls whether the public /register route is active.
+    | SECURITY: Must be false for production — this is a closed-staff system.
+    | New accounts are created by administrators via Admin → Users → Create.
+    |
+    */
+    'allow_registration' => (bool) env('ALLOW_REGISTRATION', false),
+
 ];

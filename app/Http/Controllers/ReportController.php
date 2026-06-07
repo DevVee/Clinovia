@@ -19,10 +19,10 @@ class ReportController extends Controller
         $this->authorize('view-reports');
 
         $stats = [
-            'visits_today'   => PatientLog::today()->count(),
-            'visits_month'   => PatientLog::whereMonth('log_date', now()->month)
-                                          ->whereYear('log_date', now()->year)->count(),
-            'visits_year'    => PatientLog::whereYear('log_date', now()->year)->count(),
+            'visits_today'  => PatientLog::today()->count(),
+            'visits_month'  => PatientLog::whereMonth('log_date', now()->month)
+                                         ->whereYear('log_date', now()->year)->count(),
+            'visits_year'   => PatientLog::whereYear('log_date', now()->year)->count(),
         ];
 
         return view('reports.index', compact('stats'));
@@ -103,9 +103,20 @@ class ReportController extends Controller
     {
         $this->authorize('export-reports');
 
+        // MED-5 FIX: Validate all query parameters to prevent unexpected behavior
+        // from crafted inputs (e.g. out-of-range years, future-only date ranges).
+        $request->validate([
+            'format' => ['nullable', 'in:pdf,csv'],
+            'date'   => ['nullable', 'date'],
+            'year'   => ['nullable', 'integer', 'between:2000,2100'],
+            'month'  => ['nullable', 'integer', 'between:1,12'],
+            'from'   => ['nullable', 'date'],
+            'to'     => ['nullable', 'date', 'after_or_equal:from'],
+        ]);
+
         $format = $request->get('format', 'pdf');
 
-        return match($type) {
+        return match ($type) {
             'daily'          => $this->exportDaily($request, $format),
             'monthly'        => $this->exportMonthly($request, $format),
             'annual'         => $this->exportAnnual($request, $format),
@@ -128,14 +139,13 @@ class ReportController extends Controller
             return $pdf->download("daily-report-{$date}.pdf");
         }
 
-        // CSV
         $rows[] = ['Patient', 'Chief Complaint', 'Visit Time', 'Nurse'];
         foreach ($data['consultations'] as $c) {
             $rows[] = [
                 $c->patient->full_name ?? '',
-                $c->chief_complaint ?? '',
-                $c->visit_time ?? '',
-                $c->nurse->name ?? '',
+                $c->chief_complaint    ?? '',
+                $c->visit_time         ?? '',
+                $c->nurse->name        ?? '',
             ];
         }
         return $this->csvDownload("daily-report-{$date}.csv", $rows);
@@ -190,8 +200,8 @@ class ReportController extends Controller
         $rows[] = ['Medicine', 'Category', 'Times Dispensed', 'Total Qty'];
         foreach ($data['usage'] as $u) {
             $rows[] = [
-                $u->medicine->name ?? '',
-                $u->medicine->category->name ?? '',
+                $u->medicine->name             ?? '',
+                $u->medicine->category->name   ?? '',
                 $u->times_dispensed,
                 $u->total_dispensed,
             ];
@@ -210,10 +220,12 @@ class ReportController extends Controller
 
         $rows[] = ['Medicine', 'Category', 'Quantity', 'Unit', 'Threshold', 'Expiry Date', 'Status'];
         foreach ($data['medicines'] as $m) {
-            $status = $m->quantity === 0 ? 'Out of Stock' : ($m->is_low_stock ? 'Low Stock' : 'In Stock');
+            $status = $m->quantity === 0
+                ? 'Out of Stock'
+                : ($m->is_low_stock ? 'Low Stock' : 'In Stock');
             $rows[] = [
                 $m->name,
-                $m->category->name ?? '',
+                $m->category->name               ?? '',
                 $m->quantity,
                 $m->unit,
                 $m->low_stock_threshold,
@@ -240,28 +252,56 @@ class ReportController extends Controller
             $rows[] = [
                 $a->appointment_date->format('Y-m-d'),
                 $a->patient->full_name ?? '',
-                $a->purpose ?? '',
+                $a->purpose            ?? '',
                 $a->status,
             ];
         }
         return $this->csvDownload("appointments-{$from}-{$to}.csv", $rows);
     }
 
+    /* ------------------------------------------------------------------ */
+    /*  CSV Helpers                                                         */
+    /* ------------------------------------------------------------------ */
+
     /**
-     * Stream a CSV response using fputcsv.
+     * HIGH-6 FIX: Sanitize a cell value to prevent CSV formula injection.
+     * Excel/Google Sheets execute cells starting with =, +, -, @, tab, or CR
+     * as formulas. Prefix with a single quote to force plain-text treatment.
      */
-    private function csvDownload(string $filename, array $rows)
+    private function sanitizeCsvCell(mixed $value): string
+    {
+        $str = (string) ($value ?? '');
+
+        if ($str !== '' && in_array($str[0], ['=', '+', '-', '@', "\t", "\r", "\n"], true)) {
+            return "'" . $str;
+        }
+
+        return $str;
+    }
+
+    /**
+     * Stream a CSV response using fputcsv with formula-injection sanitization.
+     */
+    private function csvDownload(string $filename, array $rows): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $headers = [
-            'Content-Type'        => 'text/csv',
+            'Content-Type'        => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+            'Pragma'              => 'no-cache',
         ];
 
         $callback = function () use ($rows) {
             $handle = fopen('php://output', 'w');
+
+            // UTF-8 BOM so Excel opens the file with correct encoding
+            fwrite($handle, "\xEF\xBB\xBF");
+
             foreach ($rows as $row) {
-                fputcsv($handle, $row);
+                // Sanitize every cell before writing
+                fputcsv($handle, array_map([$this, 'sanitizeCsvCell'], $row));
             }
+
             fclose($handle);
         };
 

@@ -65,7 +65,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // SECURITY FIX: Set to Philippine Standard Time (UTC+8) so all date/time
+    // operations (today(), now(), daily reports, audit timestamps) are in local time.
+    'timezone' => env('APP_TIMEZONE', 'Asia/Manila'),
 
     /*
     |--------------------------------------------------------------------------

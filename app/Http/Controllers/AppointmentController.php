@@ -29,9 +29,9 @@ class AppointmentController extends Controller
             ->when($status, fn ($q) => $q->where('status', $status))
             ->when($date,   fn ($q) => $q->whereDate('appointment_date', $date))
             ->when($search, fn ($q) => $q->whereHas('patient', function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name',  'like', "%{$search}%")
-                  ->orWhere('patient_number', 'like', "%{$search}%");
+                $q->where('first_name',     'like', "%{$search}%")
+                  ->orWhere('last_name',     'like', "%{$search}%")
+                  ->orWhere('patient_number','like', "%{$search}%");
             }))
             ->orderByDesc('appointment_date')
             ->orderBy('appointment_time')
@@ -43,10 +43,10 @@ class AppointmentController extends Controller
             ->pluck('total', 'status');
 
         return view('appointments.index', [
-            'appointments'  => $appointments,
-            'statusLabels'  => Appointment::statusLabels(),
-            'counts'        => $counts,
-            'filters'       => compact('status', 'date', 'search'),
+            'appointments' => $appointments,
+            'statusLabels' => Appointment::statusLabels(),
+            'counts'       => $counts,
+            'filters'      => compact('status', 'date', 'search'),
         ]);
     }
 
@@ -164,7 +164,10 @@ class AppointmentController extends Controller
 
     public function cancel(Request $request, Appointment $appointment)
     {
-        $this->authorize('approve-appointments');
+        // CRITICAL-8 FIX: Use the correct 'cancel-appointments' permission.
+        // Previously used 'approve-appointments', causing a mismatch where nurses
+        // could POST cancel but the Blade @can('cancel', $appointment) hid the button.
+        $this->authorize('cancel-appointments');
 
         $request->validate([
             'cancelled_reason' => ['required', 'string', 'max:500'],
