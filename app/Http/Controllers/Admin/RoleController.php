@@ -46,9 +46,14 @@ class RoleController extends Controller
         $data = $request->validate([
             'name'        => ['required', 'string', 'max:50', 'unique:roles,name', 'regex:/^[a-z0-9_\-]+$/'],
             'permissions' => ['array'],
+            'icon'        => ['nullable', 'string', 'max:80'],
         ]);
 
-        $role = Role::create(['name' => $data['name'], 'guard_name' => 'web']);
+        $role = Role::create([
+            'name'       => $data['name'],
+            'guard_name' => 'web',
+            'icon'       => $data['icon'] ?? null,
+        ]);
 
         if (! empty($data['permissions'])) {
             $role->syncPermissions($data['permissions']);
@@ -86,9 +91,12 @@ class RoleController extends Controller
 
         $data = $request->validate([
             'permissions' => ['array'],
+            'icon'        => ['nullable', 'string', 'max:80'],
         ]);
 
         $role->syncPermissions($data['permissions'] ?? []);
+        $role->icon = $data['icon'] ?? $role->icon;
+        $role->save();
 
         AuditLogService::log('updated', 'users', "Updated role '{$role->name}' permissions");
 

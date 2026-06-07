@@ -33,11 +33,13 @@
     @php
         $isSystem = in_array($role->name, ['administrator', 'nurse', 'staff']);
         $roleColor = match($role->name) {
-            'administrator' => ['bg' => 'danger',  'icon' => 'shield-fill-exclamation'],
-            'nurse'         => ['bg' => 'success', 'icon' => 'heart-pulse-fill'],
-            'staff'         => ['bg' => 'info',    'icon' => 'person-badge-fill'],
-            default         => ['bg' => 'secondary','icon' => 'person-fill'],
+            'administrator' => ['bg' => 'danger',   'icon' => 'shield-fill-exclamation'],
+            'nurse'         => ['bg' => 'success',  'icon' => 'heart-pulse-fill'],
+            'staff'         => ['bg' => 'info',     'icon' => 'person-badge-fill'],
+            default         => ['bg' => 'primary',  'icon' => 'person-fill'],
         };
+        // Use stored icon if set, otherwise fall back to hardcoded default
+        $displayIcon = $role->icon ?? $roleColor['icon'];
 
         // Group permissions by subject
         $permGroups = $role->permissions->groupBy(function($p) {
@@ -54,7 +56,7 @@
                 <div class="d-flex align-items-center gap-3 mb-3">
                     <div class="rounded-circle d-flex align-items-center justify-content-center text-white"
                          style="width:46px;height:46px;font-size:1.1rem;background:var(--gradient-{{ $roleColor['bg'] }});">
-                        <i class="bi bi-{{ $roleColor['icon'] }}"></i>
+                        <i class="bi bi-{{ $displayIcon }}"></i>
                     </div>
                     <div>
                         <div class="fw-bold text-capitalize">{{ $role->name }}</div>

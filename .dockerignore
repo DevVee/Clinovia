@@ -1,0 +1,36 @@
+# Dependencies (installed inside Docker)
+node_modules/
+vendor/
+
+# Git
+.git/
+.gitignore
+
+# Environment files (set in Railway dashboard, never baked into image)
+.env
+.env.*
+
+# Laravel generated files (created at runtime)
+/public/build
+/public/hot
+/public/storage
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*.log
+bootstrap/cache/*.php
+.phpunit.result.cache
+
+# Dev/editor files
+.vscode/
+.idea/
+.nova/
+.zed/
+docker-compose.yml
+docker-compose.*.yml
+Homestead.*
+
+# Docs (keep the image lean)
+*.md
+DEPLOY.md
+tests/

@@ -14,6 +14,7 @@ use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PatientLogController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,14 @@ Route::middleware(['auth', 'check.active'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // ─── Profile ──────────────────────────────────────────────────────────────
+    Route::get('/profile',              [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile',              [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar',      [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::delete('/profile/avatar',    [ProfileController::class, 'removeAvatar'])->name('profile.avatar.remove');
+    Route::put('/profile/password',     [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile',           [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ─── Patient Log (Clinic Logbook) ─────────────────────────────────────────
     Route::resource('patient-logs', PatientLogController::class)

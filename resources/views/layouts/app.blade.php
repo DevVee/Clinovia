@@ -78,9 +78,10 @@
             <button class="profile-trigger" id="profileDropdown"
                     data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="profile-avatar">
-                    <div class="avatar-placeholder">
-                        <i class="bi bi-person-fill"></i>
-                    </div>
+                    <img src="{{ auth()->user()->avatarUrl() }}"
+                         alt="{{ auth()->user()->name }}"
+                         class="profile-avatar-img"
+                         style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                     <div class="online-indicator"></div>
                 </div>
                 <i class="bi bi-chevron-down dropdown-arrow"></i>
@@ -88,10 +89,21 @@
             <ul class="dropdown-menu profile-menu dropdown-menu-end shadow-lg"
                 aria-labelledby="profileDropdown">
                 <li class="profile-header">
-                    <div class="profile-info">
-                        <strong>{{ auth()->user()->name }}</strong>
-                        <small>{{ ucfirst(auth()->user()->getRoleNames()->first() ?? 'User') }}</small>
+                    <div style="display:flex;align-items:center;gap:.65rem;">
+                        <img src="{{ auth()->user()->avatarUrl() }}"
+                             alt="{{ auth()->user()->name }}"
+                             style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #e0e7ff;">
+                        <div class="profile-info">
+                            <strong>{{ auth()->user()->name }}</strong>
+                            <small>{{ ucfirst(auth()->user()->getRoleNames()->first() ?? 'User') }}</small>
+                        </div>
                     </div>
+                </li>
+                <li><hr class="dropdown-divider m-0"></li>
+                <li>
+                    <a href="{{ route('profile.edit') }}" class="dropdown-item">
+                        <i class="bi bi-person-circle me-2 text-primary"></i>My Profile
+                    </a>
                 </li>
                 <li><hr class="dropdown-divider m-0"></li>
                 <li>
@@ -119,12 +131,16 @@
 
         {{-- Profile Card --}}
         <div class="sidebar-header">
-            <div class="profile-image-container">
-                <div class="sidebar-avatar">
-                    <i class="bi bi-person-fill"></i>
+            <a href="{{ route('profile.edit') }}" style="text-decoration:none;">
+                <div class="profile-image-container">
+                    <div class="sidebar-avatar" style="overflow:hidden;">
+                        <img src="{{ auth()->user()->avatarUrl() }}"
+                             alt="{{ auth()->user()->name }}"
+                             style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">
+                    </div>
+                    <div class="status-dot"></div>
                 </div>
-                <div class="status-dot"></div>
-            </div>
+            </a>
             <p class="sidebar-user-name">{{ auth()->user()->name }}</p>
             <small class="sidebar-user-role">
                 {{ ucfirst(auth()->user()->getRoleNames()->first() ?? 'User') }}
