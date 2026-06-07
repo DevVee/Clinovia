@@ -14,14 +14,14 @@ class SettingsSeeder extends Seeder
             // ── General ─────────────────────────────────────────────────────
             ['key' => 'app_name',       'value' => 'Clinovia',                                                'type' => 'string',  'group' => 'general', 'description' => 'Application name shown in the navbar'],
             ['key' => 'app_short_name', 'value' => 'Clinovia',                                                'type' => 'string',  'group' => 'general', 'description' => 'Short application name'],
-            ['key' => 'org_name',       'value' => 'Immaculate Conception College of Balayan, Inc.',           'type' => 'string',  'group' => 'general', 'description' => 'Full organization/school name'],
-            ['key' => 'org_short_name', 'value' => 'ICCBI',                                                   'type' => 'string',  'group' => 'general', 'description' => 'Short organization name/abbreviation'],
+            ['key' => 'org_name',       'value' => 'Clinovia',  'type' => 'string',  'group' => 'general', 'description' => 'Full organization/school name'],
+            ['key' => 'org_short_name', 'value' => 'Clinovia', 'type' => 'string',  'group' => 'general', 'description' => 'Short organization name/abbreviation'],
 
             // ── Clinic ───────────────────────────────────────────────────────
-            ['key' => 'clinic_name',        'value' => 'ICCBI School Clinic',                                 'type' => 'string',  'group' => 'clinic',  'description' => 'Clinic name (used on reports)'],
-            ['key' => 'clinic_address',     'value' => 'Immaculate Conception College of Balayan, Inc., Balayan, Batangas', 'type' => 'string', 'group' => 'clinic', 'description' => 'Clinic address'],
-            ['key' => 'clinic_contact',     'value' => '',                                                    'type' => 'string',  'group' => 'clinic',  'description' => 'Clinic contact number'],
-            ['key' => 'clinic_email',       'value' => 'clinic@iccbi.edu.ph',                                 'type' => 'string',  'group' => 'clinic',  'description' => 'Clinic email address'],
+            ['key' => 'clinic_name',        'value' => 'Clinovia School Clinic',  'type' => 'string',  'group' => 'clinic',  'description' => 'Clinic name (used on reports)'],
+            ['key' => 'clinic_address',     'value' => '',                         'type' => 'string',  'group' => 'clinic',  'description' => 'Clinic address'],
+            ['key' => 'clinic_contact',     'value' => '',                         'type' => 'string',  'group' => 'clinic',  'description' => 'Clinic contact number'],
+            ['key' => 'clinic_email',       'value' => 'clinic@clinovia.app',      'type' => 'string',  'group' => 'clinic',  'description' => 'Clinic email address'],
             ['key' => 'clinic_status_text', 'value' => 'Clinic Online',                                       'type' => 'string',  'group' => 'clinic',  'description' => 'Status text shown in the top bar'],
 
             // Patient categories (JSON list)

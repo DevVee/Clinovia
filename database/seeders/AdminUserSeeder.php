@@ -17,7 +17,7 @@ class AdminUserSeeder extends Seeder
 
         // ── Administrator ─────────────────────────────────────────────────────
         $admin = User::firstOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@iccbi.edu.ph')],
+            ['email' => env('ADMIN_EMAIL', 'admin@clinovia.app')],
             [
                 'name'               => env('ADMIN_NAME', 'System Administrator'),
                 'password'           => Hash::make(env('ADMIN_PASSWORD', 'ChangeMe@' . now()->year . '!')),
@@ -29,7 +29,7 @@ class AdminUserSeeder extends Seeder
 
         // ── Demo Nurse ────────────────────────────────────────────────────────
         $nurse = User::firstOrCreate(
-            ['email' => env('NURSE_EMAIL', 'nurse@iccbi.edu.ph')],
+            ['email' => env('NURSE_EMAIL', 'nurse@clinovia.app')],
             [
                 'name'               => env('NURSE_NAME', 'Demo Nurse'),
                 'password'           => Hash::make(env('NURSE_PASSWORD', 'ChangeMe@' . now()->year . '!')),
@@ -41,7 +41,7 @@ class AdminUserSeeder extends Seeder
 
         // ── Demo Staff ────────────────────────────────────────────────────────
         $staff = User::firstOrCreate(
-            ['email' => env('STAFF_EMAIL', 'staff@iccbi.edu.ph')],
+            ['email' => env('STAFF_EMAIL', 'staff@clinovia.app')],
             [
                 'name'               => env('STAFF_NAME', 'Demo Staff'),
                 'password'           => Hash::make(env('STAFF_PASSWORD', 'ChangeMe@' . now()->year . '!')),
@@ -52,8 +52,8 @@ class AdminUserSeeder extends Seeder
         $staff->syncRoles('staff');
 
         $this->command->info('Seed users created. ⚠️  Change passwords immediately for production!');
-        $this->command->warn('  Admin : ' . env('ADMIN_EMAIL', 'admin@iccbi.edu.ph'));
-        $this->command->warn('  Nurse : ' . env('NURSE_EMAIL', 'nurse@iccbi.edu.ph'));
-        $this->command->warn('  Staff : ' . env('STAFF_EMAIL', 'staff@iccbi.edu.ph'));
+        $this->command->warn('  Admin : ' . env('ADMIN_EMAIL', 'admin@clinovia.app'));
+        $this->command->warn('  Nurse : ' . env('NURSE_EMAIL', 'nurse@clinovia.app'));
+        $this->command->warn('  Staff : ' . env('STAFF_EMAIL', 'staff@clinovia.app'));
     }
 }

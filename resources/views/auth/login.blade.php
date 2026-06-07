@@ -77,13 +77,13 @@
                 <div class="auth-logo mb-3">
                     <i class="bi bi-heart-pulse-fill"></i>
                 </div>
-                <h5 class="fw-bold mb-0">SSCMS</h5>
+                <h5 class="fw-bold mb-0">Clinovia</h5>
                 <p class="text-muted small">Smart School Clinic Management System</p>
             </div>
 
             {{-- Heading --}}
             <h2 class="auth-form-heading">Welcome back</h2>
-            <p class="auth-form-sub">Sign in to your SSCMS account to continue</p>
+            <p class="auth-form-sub">Sign in to your Clinovia account to continue</p>
 
             {{-- Session / Error Alerts --}}
             @if(session('status'))
@@ -178,7 +178,7 @@
 
                 {{-- Submit --}}
                 <button type="submit" class="btn btn-auth-submit mb-3">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to SSCMS
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to Clinovia
                 </button>
 
                 {{-- Divider info --}}
@@ -191,7 +191,7 @@
             {{-- Footer --}}
             <hr class="mt-4 mb-3" style="border-color: hsl(210,20%,92%);">
             <p class="text-center mb-0" style="font-size:.75rem; color:var(--text-muted);">
-                &copy; {{ date('Y') }} Immaculate Conception College of Balayan, Inc.
+                &copy; {{ date('Y') }} <strong>Clinovia</strong> &mdash; Smart School Clinic Management System
             </p>
         </div>
     </div>

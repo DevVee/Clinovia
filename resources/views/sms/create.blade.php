@@ -89,7 +89,7 @@
             <div class="card-body">
                 <dl class="mb-0" style="font-size:.875rem;">
                     <dt class="text-muted small">Sender Name</dt>
-                    <dd class="fw-semibold">{{ config('semaphore.sender_name', 'ICCBI') }}</dd>
+                    <dd class="fw-semibold">{{ config('semaphore.sender_name', 'CLINOVIA') }}</dd>
                     <dt class="text-muted small">Provider</dt>
                     <dd class="fw-semibold">Semaphore.co</dd>
                     <dt class="text-muted small">Max Length</dt>

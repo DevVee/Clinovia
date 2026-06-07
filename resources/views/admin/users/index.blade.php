@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="fw-bold mb-0">User Management</h4>
-        <p class="text-muted small mb-0">Manage SSCMS accounts, roles, and access</p>
+        <p class="text-muted small mb-0">Manage Clinovia accounts, roles, and access</p>
     </div>
     @can('manage-users')
     <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm px-3">

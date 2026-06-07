@@ -47,12 +47,15 @@ class SecurityHeaders
         // Bootstrap + custom SCSS served locally via Vite; Bootstrap JS uses
         // inline handlers — 'unsafe-inline' is retained until nonce-based CSP
         // can be wired through the Vite plugin.
+        // Google Fonts CSS comes from fonts.googleapis.com;
+        // the actual woff2 files are served from fonts.gstatic.com.
+        // Bootstrap Icons are now bundled locally via Vite — no CDN needed there.
         $csp = implode('; ', [
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline'",
-            "style-src 'self' 'unsafe-inline'",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "img-src 'self' data: blob:",
-            "font-src 'self'",
+            "font-src 'self' https://fonts.gstatic.com",
             "connect-src 'self'",
             "form-action 'self'",
             "base-uri 'self'",

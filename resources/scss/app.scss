@@ -1,7 +1,10 @@
 // ─── Bootstrap 5 ─────────────────────────────────────────────────────────────
 @import "bootstrap/scss/bootstrap";
 
-// Bootstrap Icons loaded via CDN in layouts/app.blade.php
+// ─── Bootstrap Icons (served locally — no CDN needed) ────────────────────────
+// Font files are in public/fonts/; override the path before importing the SCSS.
+$bootstrap-icons-font-dir: "/fonts";
+@import "bootstrap-icons/font/bootstrap-icons";
 
 // ─── SSCMS Medical Theme ──────────────────────────────────────────────────────
 

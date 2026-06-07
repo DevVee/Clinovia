@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h4 class="fw-bold mb-0">Add New User</h4>
-        <p class="text-muted small mb-0">Create an SSCMS account and assign a role</p>
+        <p class="text-muted small mb-0">Create a Clinovia account and assign a role</p>
     </div>
     <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left me-1"></i> Back to Users
