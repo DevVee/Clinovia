@@ -36,9 +36,10 @@ services:
       - key: DB_CONNECTION
         value: sqlite
 
-      # Session / Cache / Queue — all use the SQLite database driver
+      # Session — file driver writes to storage/framework/sessions/ (no DB table needed).
+      # The project has no create_sessions_table migration, so 'database' driver fails.
       - key: SESSION_DRIVER
-        value: database
+        value: file
       - key: SESSION_LIFETIME
         value: "120"
       - key: SESSION_SECURE_COOKIE
