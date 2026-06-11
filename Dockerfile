@@ -47,13 +47,18 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # ── PHP dependencies (layer cached until composer.json / composer.lock change) ─
+# Retries up to 3 times to handle transient GitHub/Packagist 504 errors.
 COPY composer.json composer.lock ./
-RUN composer install \
-        --no-dev \
-        --no-scripts \
-        --no-autoloader \
-        --no-interaction \
-        --no-progress
+RUN for i in 1 2 3; do \
+        composer install \
+            --no-dev \
+            --no-scripts \
+            --no-autoloader \
+            --no-interaction \
+            --no-progress \
+        && break; \
+        echo "==> composer attempt $i/3 failed, retrying in 15 s..." && sleep 15; \
+    done
 
 # ── Application source ────────────────────────────────────────────────────────
 COPY . .
