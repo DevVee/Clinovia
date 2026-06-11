@@ -36,10 +36,12 @@ class ReportService
 
     public function monthlyReport(int $year, int $month): array
     {
-        $consultationsByDay = Consultation::selectRaw('DAY(visit_date) as day, COUNT(*) as total')
-            ->whereYear('visit_date', $year)->whereMonth('visit_date', $month)
-            ->groupBy('day')->orderBy('day')
-            ->pluck('total', 'day');
+        // Use PHP-side grouping so this works on both SQLite (local) and MySQL/Postgres (production)
+        $consultationsByDay = Consultation::whereYear('visit_date', $year)
+            ->whereMonth('visit_date', $month)
+            ->pluck('visit_date')
+            ->groupBy(fn ($d) => (int) \Carbon\Carbon::parse($d)->format('j'))
+            ->map->count();
 
         $byCategory = Patient::selectRaw('category, COUNT(DISTINCT consultations.patient_id) as total')
             ->join('consultations', 'patients.id', '=', 'consultations.patient_id')

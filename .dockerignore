@@ -1,36 +1,50 @@
-# Dependencies (installed inside Docker)
-node_modules/
-vendor/
-
 # Git
-.git/
+.git
 .gitignore
+.gitattributes
 
-# Environment files (set in Railway dashboard, never baked into image)
+# Node (installed inside the node build stage)
+node_modules
+
+# PHP vendor (installed fresh by composer in Dockerfile)
+vendor
+
+# Built assets (built in the node stage)
+public/build
+public/hot
+
+# Existing SQLite (generated fresh inside Dockerfile)
+database/database.sqlite
+database/database.sqlite-wal
+database/database.sqlite-shm
+
+# Env files — real env comes from Render dashboard
 .env
 .env.*
+!.env.example
 
-# Laravel generated files (created at runtime)
-/public/build
-/public/hot
-/public/storage
+# Storage runtime files
+storage/logs/*.log
 storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/views/*
-storage/logs/*.log
 bootstrap/cache/*.php
+
+# Dev / test artefacts
 .phpunit.result.cache
-
-# Dev/editor files
-.vscode/
-.idea/
-.nova/
-.zed/
-docker-compose.yml
-docker-compose.*.yml
-Homestead.*
-
-# Docs (keep the image lean)
-*.md
-DEPLOY.md
+.phpunit.cache
 tests/
+phpunit.xml
+
+# Editor / OS
+.vscode
+.idea
+.fleet
+.nova
+.zed
+.DS_Store
+Thumbs.db
+
+# Docker compose (local dev only)
+docker-compose*.yml
+Homestead.*

@@ -1,0 +1,93 @@
+# Clinovia — Render deployment (SQLite, Docker, free tier)
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Demo credentials (seeded at Docker build time):
+#   Admin : admin@clinovia.app  /  Admin@2026!
+#   Nurse : nurse@clinovia.app  /  Nurse@2026!
+#   Staff : staff@clinovia.app  /  Staff@2026!
+
+services:
+  - type: web
+    name: clinovia
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /login
+
+    # ── Build ─────────────────────────────────────────────────────────────────
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+
+    # ── Environment variables ─────────────────────────────────────────────────
+    envVars:
+      # App
+      - key: APP_NAME
+        value: Clinovia
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true          # Render generates a secure key on first deploy
+      - key: APP_TIMEZONE
+        value: Asia/Manila
+
+      # Database — SQLite lives in the container FS; resets on each new deploy
+      - key: DB_CONNECTION
+        value: sqlite
+
+      # Session / Cache / Queue — all use the SQLite database driver
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: "120"
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+
+      # Logging — send to stderr so Render captures it
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+
+      # Trust Render's load-balancer proxy
+      - key: TRUST_PROXIES
+        value: "*"
+
+      # Security
+      - key: ALLOW_REGISTRATION
+        value: "false"
+
+      # Bcrypt cost (lower = faster login on free tier's shared CPU)
+      - key: BCRYPT_ROUNDS
+        value: "10"
+
+      # Mail — disabled in demo (logs only)
+      - key: MAIL_MAILER
+        value: log
+
+      # SMS / AI integrations — leave blank unless you add real keys
+      - key: GROQ_API_KEY
+        value: ""
+      - key: SEMAPHORE_API_KEY
+        value: ""
+      - key: SEMAPHORE_SENDER_NAME
+        value: CLINOVIA
+
+      # Demo seeder credentials (must match .env.example values used at build time)
+      - key: ADMIN_EMAIL
+        value: admin@clinovia.app
+      - key: ADMIN_PASSWORD
+        value: Admin@2026!
+      - key: NURSE_EMAIL
+        value: nurse@clinovia.app
+      - key: NURSE_PASSWORD
+        value: Nurse@2026!
+      - key: STAFF_EMAIL
+        value: staff@clinovia.app
+      - key: STAFF_PASSWORD
+        value: Staff@2026!
