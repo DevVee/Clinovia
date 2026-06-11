@@ -1,6 +1,16 @@
 #!/bin/sh
 set -e
 
+# ─── 0. Ensure APP_KEY is in Laravel's required  base64:...  format ──────────
+# Render's generateValue: true produces a plain random string (e.g. "AbCd1234"),
+# NOT the "base64:XXXX==" format Laravel needs for AES-256 encryption.
+# We generate a proper key with pure PHP — no .env file required.
+if [ -z "$APP_KEY" ] || ! echo "$APP_KEY" | grep -q "^base64:"; then
+    APP_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
+    export APP_KEY
+    echo "==> Generated valid Laravel APP_KEY (Render key was not in base64: format)"
+fi
+
 # ─── 1. Resolve APP_URL from Render's injected URL ────────────────────────────
 # Render automatically sets RENDER_EXTERNAL_URL = https://<service>.onrender.com
 APP_URL="${RENDER_EXTERNAL_URL:-${APP_URL:-http://localhost:8080}}"

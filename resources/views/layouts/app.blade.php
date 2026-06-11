@@ -404,6 +404,14 @@
             try { window.location.href = '{{ route("ai-assistant.index") }}'; } catch(e) {}
         });
     }
+
+    /* ── 6. Keep-alive heartbeat — prevents Render free tier from sleeping ──
+       Pings /ping every 10 minutes while this tab is open.
+       Silent fetch — no UI effect, no auth required on that route.       */
+    setInterval(function () {
+        fetch('/ping', { method: 'GET', cache: 'no-store' }).catch(function () {});
+    }, 10 * 60 * 1000);
+
 })();
 </script>
 </body>

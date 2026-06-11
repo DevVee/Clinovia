@@ -19,6 +19,10 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Route;
 
+// ─── Keep-alive ping (public, no session/auth overhead) ──────────────────────
+// Hit by the Render cron job + browser heartbeat to prevent free-tier sleep.
+Route::get('/ping', fn () => response('pong', 200)->header('Content-Type', 'text/plain'));
+
 // ─── Public: redirect to login ────────────────────────────────────────────────
 Route::get('/', fn () => redirect()->route('login'));
 

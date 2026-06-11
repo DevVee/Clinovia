@@ -91,3 +91,22 @@ services:
         value: staff@clinovia.app
       - key: STAFF_PASSWORD
         value: Staff@2026!
+
+# ── Keep-alive cron job ───────────────────────────────────────────────────────
+# Pings the web service every 13 minutes so Render free tier never sleeps.
+# Uses the tiny curlimages/curl image (~6 MB) — no build step needed.
+# PING_HOST is automatically populated from the web service's hostname.
+  - type: cron
+    name: clinovia-keepalive
+    runtime: image
+    image:
+      url: docker.io/curlimages/curl:8
+    region: singapore
+    schedule: "*/13 * * * *"
+    startCommand: curl -sf --max-time 10 "https://${PING_HOST}/ping" || true
+    envVars:
+      - key: PING_HOST
+        fromService:
+          name: clinovia
+          type: web
+          property: host
