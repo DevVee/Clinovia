@@ -16,11 +16,21 @@ fi
 APP_URL="${RENDER_EXTERNAL_URL:-${APP_URL:-http://localhost:8080}}"
 export APP_URL
 
+# Set ASSET_URL = APP_URL so Laravel's asset() helper always generates absolute
+# URLs with the correct scheme/domain, regardless of proxy header detection.
+# Without this, assets can resolve to http://localhost:8080/build/... in the HTML.
+ASSET_URL="${APP_URL}"
+export ASSET_URL
+
 # Ensure cookies are only sent over HTTPS when running on Render
 if [ -n "$RENDER_EXTERNAL_URL" ]; then
     SESSION_SECURE_COOKIE=true
     export SESSION_SECURE_COOKIE
 fi
+
+echo "==> APP_URL  : ${APP_URL}"
+echo "==> ASSET_URL: ${ASSET_URL}"
+echo "==> Vite manifest: $(ls /var/www/html/public/build/manifest.json 2>/dev/null && echo 'found' || echo 'MISSING!')"
 
 # ─── 2. Wire nginx to the correct port ───────────────────────────────────────
 PORT="${PORT:-8080}"

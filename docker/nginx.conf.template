@@ -37,11 +37,9 @@ http {
         root  /var/www/html/public;
         index index.php;
 
-        # Security headers
-        add_header X-Content-Type-Options  "nosniff"     always;
-        add_header X-Frame-Options         "SAMEORIGIN"  always;
-        add_header X-XSS-Protection        "1; mode=block" always;
-        add_header Referrer-Policy         "strict-origin-when-cross-origin" always;
+        # NOTE: Security headers (CSP, X-Frame-Options, HSTS, etc.) are set by
+        # Laravel's SecurityHeaders middleware — do NOT duplicate them here.
+        # Duplicate headers cause browsers to reject the response entirely.
 
         # Laravel URL rewriting
         location / {
@@ -59,7 +57,7 @@ http {
             fastcgi_buffer_size  32k;
         }
 
-        # Long-lived cache for versioned static assets
+        # Long-lived cache for versioned Vite assets (/build/assets/*)
         location ~* \.(css|js|woff|woff2|ttf|eot|svg|png|jpg|jpeg|gif|ico|webp)$ {
             expires 1y;
             add_header Cache-Control "public, immutable";
