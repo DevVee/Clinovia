@@ -33,9 +33,18 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // ── Log every 419 TokenMismatch with full context ─────────────────────
-        // This makes CSRF/session issues diagnosable in Render's log stream
-        // without impacting users (returns null = let Laravel render default 419).
+        // ── 419 CSRF TokenMismatch: log + graceful recovery ───────────────────
+        //
+        // Root causes on Render free tier:
+        //   1. Container restart after inactivity → SQLite DB rebuilt → sessions wiped
+        //      → browser sends stale cookie referencing a session that no longer exists
+        //   2. User leaves a tab open across a session expiry / deploy
+        //   3. APP_KEY change (shouldn't happen with our stable key setup)
+        //
+        // Recovery strategy:
+        //   - AJAX/JSON callers  → 419 JSON so the JS can show a "refresh" prompt
+        //   - Browser requests   → redirect to /login with an explanatory flash message
+        //     (much better UX than a dead "419 Page Expired" wall)
         $exceptions->render(function (
             TokenMismatchException $e,
             \Illuminate\Http\Request $request
@@ -48,14 +57,25 @@ return Application::configure(basePath: dirname(__DIR__))
                 'user_agent'  => $request->userAgent(),
                 'referer'     => $request->header('Referer'),
                 'session_id'  => $request->hasSession()
-                                   ? $request->session()->getId()
-                                   : null,
+                                    ? $request->session()->getId()
+                                    : null,
                 'has_token'   => $request->hasSession()
-                                   ? (bool) $request->session()->token()
-                                   : false,
+                                    ? (bool) $request->session()->token()
+                                    : false,
                 'session_drv' => config('session.driver'),
             ]);
 
-            return null; // Let Laravel render the default 419 page
+            // AJAX / API callers: return JSON so the frontend can handle it
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Your session has expired. Please refresh the page and try again.',
+                    'expired' => true,
+                ], 419);
+            }
+
+            // Browser form submissions: redirect to login with a helpful message.
+            // The flash message is displayed in the auth-session-status component.
+            return redirect()->route('login')
+                ->with('status', 'Your session expired or timed out. Please log in again to continue.');
         });
     })->create();

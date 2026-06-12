@@ -63,8 +63,11 @@ services:
       # 'database' sessions survive PHP-FPM restarts and Nginx restarts.
       - key: SESSION_DRIVER
         value: database
+      # 480 min = 8-hour clinic workday; CSRF token stays valid for the full shift.
+      # On Render free tier, container restarts (not session expiry) are the main
+      # cause of 419s — the 419-→-login redirect in bootstrap/app.php handles those.
       - key: SESSION_LIFETIME
-        value: "120"
+        value: "480"
       - key: SESSION_SECURE_COOKIE
         value: "true"
       # FIX: 'lax' (not 'strict') — strict blocks the session cookie when a user

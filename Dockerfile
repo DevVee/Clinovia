@@ -13,6 +13,7 @@ FROM php:8.2-fpm-alpine
 RUN apk add --no-cache \
         nginx \
         supervisor \
+        sqlite \
         sqlite-dev \
         libzip-dev \
         libpng-dev \

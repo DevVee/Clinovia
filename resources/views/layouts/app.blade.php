@@ -440,6 +440,36 @@
         fetch('/ping', { method: 'GET', cache: 'no-store' }).catch(function () {});
     }, 10 * 60 * 1000);
 
+    /* ── 7. CSRF token refresh + session keep-alive ─────────────────────────
+       Calls /session/token every 20 minutes while the user is logged in.
+       This does two things:
+         (a) Resets the server-side session TTL so the session doesn't expire
+             while the user has a tab open but is idle.
+         (b) Fetches a fresh CSRF token and injects it into the meta tag and
+             all existing form[_token] fields, so old tabs don't 419 on submit.
+       If the session has already expired (container restart, etc.) the fetch
+       returns a redirect to /login — we silently ignore it here; the user
+       will see the login page naturally on their next form submission.        */
+    setInterval(function () {
+        fetch('/session/token', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store',
+        })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+            if (!data || !data.token) return;
+            // Update <meta name="csrf-token">
+            var meta = document.querySelector('meta[name="csrf-token"]');
+            if (meta) meta.content = data.token;
+            // Update all hidden _token fields in any forms on the page
+            document.querySelectorAll('input[name="_token"]').forEach(function (inp) {
+                inp.value = data.token;
+            });
+        })
+        .catch(function () {}); // silently ignore network errors
+    }, 20 * 60 * 1000); // every 20 minutes
+
 })();
 </script>
 </body>

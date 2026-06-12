@@ -37,9 +37,22 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
-            'synchronous' => null,
+
+            // WAL (Write-Ahead Logging) mode: allows concurrent readers while a writer
+            // is active. Critical under nginx + php-fpm multi-worker where multiple
+            // PHP processes can hit the DB simultaneously — without WAL, one writer
+            // blocks all readers (default journal mode = DELETE).
+            'journal_mode' => env('DB_JOURNAL_MODE', 'WAL'),
+
+            // NORMAL sync: flush to OS but not full fsync on every write.
+            // Safe for WAL mode — WAL's own checkpoint provides crash safety.
+            // Significantly faster than FULL on every commit (default = FULL for WAL).
+            'synchronous' => env('DB_SYNCHRONOUS', 'NORMAL'),
+
+            // Wait up to 5 seconds when the DB is locked before returning SQLITE_BUSY.
+            // Without this, any lock contention immediately throws a "database is locked"
+            // error and crashes the request. 5000 ms is generous for clinic traffic.
+            'busy_timeout' => env('DB_BUSY_TIMEOUT', 5000),
         ],
 
         'mysql' => [

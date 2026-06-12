@@ -197,7 +197,7 @@
 
 /* ── Input area ──────────────────────────────────────────── */
 .cobi-input-area {
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.25rem 1.1rem;
     border-top: 1px solid var(--border);
     background: var(--card-bg);
     flex-shrink: 0;
@@ -206,15 +206,16 @@
     display: flex;
     gap: .65rem;
     align-items: flex-end;
-    background: hsl(210,17%,97%);
-    border: 1.5px solid var(--border);
+    background: #ffffff;
+    border: 2px solid hsl(210,20%,78%);
     border-radius: 14px;
-    padding: .65rem .75rem;
+    padding: .7rem .85rem;
     transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
 .cobi-input-wrap:focus-within {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(15,115,186,.1);
+    box-shadow: 0 0 0 3px rgba(15,115,186,.12);
 }
 .cobi-textarea {
     flex: 1;
@@ -222,14 +223,19 @@
     background: transparent;
     resize: none;
     outline: none;
-    font-size: .875rem;
-    color: var(--text);
-    line-height: 1.5;
-    max-height: 120px;
+    font-size: .9rem;
+    color: #1a1d23;
+    line-height: 1.55;
+    min-height: 40px;
+    max-height: 140px;
     overflow-y: auto;
     font-family: inherit;
+    caret-color: var(--primary);
 }
-.cobi-textarea::placeholder { color: var(--text-muted); }
+.cobi-textarea::placeholder {
+    color: hsl(210,10%,58%);
+    font-style: italic;
+}
 .cobi-send-btn {
     width: 36px; height: 36px;
     border-radius: 10px;
@@ -586,8 +592,14 @@ async function sendMessage(text) {
 
         if (res.ok) {
             appendMessage('cobi', data.response, now);
+        } else if (res.status === 419 || data.expired) {
+            // Session expired — refresh the page so a new CSRF token is issued
+            appendMessage('cobi', '🔄 Your session expired. Reloading in 3 seconds…', now);
+            setTimeout(() => window.location.reload(), 3000);
+        } else if (res.status === 429) {
+            appendMessage('cobi', '⏳ You\'re sending messages too quickly. Please wait a moment.', now);
         } else {
-            appendMessage('cobi', '⚠️ ' + (data.message || 'Something went wrong.'), now);
+            appendMessage('cobi', '⚠️ ' + (data.message || 'Something went wrong. Please try again.'), now);
         }
     } catch (err) {
         hideTyping();

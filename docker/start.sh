@@ -77,10 +77,23 @@ PORT="${PORT:-8080}"
 export PORT
 envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
-# ─── 4. Cache Laravel config / routes / views ────────────────────────────────
+# ─── 4. Set SQLite WAL mode (permanent, stored in the .sqlite file header) ─────
+# WAL allows concurrent readers while a writer is active — essential under
+# nginx + php-fpm multi-worker. Without it, write contention produces
+# "database is locked" 500 errors under simultaneous requests.
+# The PRAGMA is idempotent: safe to run every boot even if already set.
+DB_FILE="/var/www/html/database/database.sqlite"
+if [ -f "$DB_FILE" ]; then
+    sqlite3 "$DB_FILE" \
+        "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; PRAGMA busy_timeout=5000;" \
+        2>/dev/null && echo "==> SQLite WAL mode: enabled" \
+        || echo "==> SQLite WAL mode: sqlite3 not found — config-level fallback active"
+fi
+
+# ─── 5. Cache Laravel config / routes / views ────────────────────────────────
 # This bakes the current environment variables (APP_URL, APP_KEY, SESSION_DRIVER,
 # etc.) into serialized PHP caches in bootstrap/cache/.
-# IMPORTANT: Run AFTER all env vars are finalized (steps 0–2 above).
+# IMPORTANT: Run AFTER all env vars are finalized (steps 0–3 above).
 # The pre-seeded .env was deleted at image build time; env vars come from Render.
 php artisan config:cache
 php artisan route:cache

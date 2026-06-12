@@ -24,6 +24,16 @@ use Illuminate\Support\Facades\Route;
 // Returns plain text 'pong' — no middleware stack, no session creation.
 Route::get('/ping', fn () => response('pong', 200)->header('Content-Type', 'text/plain'));
 
+// ─── Session keep-alive + CSRF token refresh ──────────────────────────────────
+// Called by the frontend every 20 minutes from active browser tabs.
+// Two purposes:
+//   1. Extends the session lifetime (any auth request resets the session TTL)
+//   2. Returns a fresh CSRF token so forms on long-lived tabs don't 419
+// Must be auth-protected so it reads/touches the real session.
+Route::middleware(['auth'])->get('/session/token', function () {
+    return response()->json(['token' => csrf_token()]);
+})->name('session.token');
+
 // ─── Rich health check endpoint ───────────────────────────────────────────────
 // Checks DB connectivity, cache, and storage writability.
 // Excluded from session middleware to avoid creating ghost sessions.
