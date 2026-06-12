@@ -1,277 +1,1096 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Clinovia is the modern smart clinic management system built for schools — patient records, appointments, medicines, AI assistant, and more in one platform." />
+<title>Clinovia — Smart School Clinic Management System</title>
+<link rel="icon" type="image/svg+xml" href="/clinovia-icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+/* ════════════════════════════════════════════════════════════════
+   RESET & TOKENS
+════════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p:hsl(201,85%,39%);
+  --p-l:hsl(201,85%,56%);
+  --s:hsl(265,58%,54%);
+  --s-l:hsl(265,58%,70%);
+  --dark:#060d1b;
+  --dark-2:#0d1628;
+  --dark-3:#162035;
+  --b-dark:rgba(255,255,255,.07);
+  --b-dark-s:rgba(255,255,255,.13);
+  --txt:#e8edf5;
+  --mut:#7c879a;
+  --mut-l:#a8b3c3;
+  --grad:linear-gradient(135deg,var(--p),var(--s));
+  --grad-r:linear-gradient(315deg,var(--p),var(--s));
+  --grad-h:linear-gradient(90deg,var(--p),var(--s));
+  --fh:'Poppins','Inter',sans-serif;
+  --fb:'Inter',system-ui,sans-serif;
+  --r:14px;--rl:20px;--rxl:28px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);font-size:16px;line-height:1.6;color:#1e293b;background:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:var(--dark-3);border-radius:3px}
+img{max-width:100%;display:block}
+a{text-decoration:none}
+button{font-family:var(--fb);cursor:pointer}
 
-        <title>Laravel</title>
+/* ════════════════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════════════════ */
+.grad-text{background:var(--grad-r);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}.d5{transition-delay:.40s}
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+/* ════════════════════════════════════════════════════════════════
+   NAVBAR
+════════════════════════════════════════════════════════════════ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;padding:1.1rem 2rem;display:flex;align-items:center;gap:1.5rem;transition:all .3s}
+.nav.solid{background:rgba(6,13,27,.96);border-bottom:1px solid var(--b-dark-s);padding:.75rem 2rem;backdrop-filter:blur(18px)}
+.nav-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;flex-shrink:0}
+.nav-icon{width:33px;height:33px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:#fff}
+.nav-name{font-family:var(--fh);font-weight:700;font-size:1.05rem;color:#fff;letter-spacing:-.01em}
+.nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;flex:1}
+.nav-links a{font-size:.85rem;font-weight:500;color:rgba(255,255,255,.6);padding:.4rem .85rem;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav-right{display:flex;align-items:center;gap:.75rem;margin-left:auto}
+.nav-login{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.7);padding:.45rem .95rem;border-radius:8px;transition:color .2s}
+.nav-login:hover{color:#fff}
+.nav-cta{font-size:.85rem;font-weight:700;color:#fff;padding:.5rem 1.15rem;border-radius:9px;background:var(--grad);transition:opacity .2s,transform .15s;box-shadow:0 4px 16px rgba(15,115,186,.3)}
+.nav-cta:hover{opacity:.88;transform:translateY(-1px)}
+.nav-mob{display:none;background:none;border:none;color:#fff;font-size:1.35rem;padding:.25rem;flex-shrink:0}
 
-        <!-- Styles / Scripts -->
-        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-            @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @else
-            <style>
-                /*! tailwindcss v4.0.7 | MIT License | https://tailwindcss.com */@layer theme{:root,:host{--font-sans:'Instrument Sans',ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--font-serif:ui-serif,Georgia,Cambria,"Times New Roman",Times,serif;--font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--color-red-50:oklch(.971 .013 17.38);--color-red-100:oklch(.936 .032 17.717);--color-red-200:oklch(.885 .062 18.334);--color-red-300:oklch(.808 .114 19.571);--color-red-400:oklch(.704 .191 22.216);--color-red-500:oklch(.637 .237 25.331);--color-red-600:oklch(.577 .245 27.325);--color-red-700:oklch(.505 .213 27.518);--color-red-800:oklch(.444 .177 26.899);--color-red-900:oklch(.396 .141 25.723);--color-red-950:oklch(.258 .092 26.042);--color-orange-50:oklch(.98 .016 73.684);--color-orange-100:oklch(.954 .038 75.164);--color-orange-200:oklch(.901 .076 70.697);--color-orange-300:oklch(.837 .128 66.29);--color-orange-400:oklch(.75 .183 55.934);--color-orange-500:oklch(.705 .213 47.604);--color-orange-600:oklch(.646 .222 41.116);--color-orange-700:oklch(.553 .195 38.402);--color-orange-800:oklch(.47 .157 37.304);--color-orange-900:oklch(.408 .123 38.172);--color-orange-950:oklch(.266 .079 36.259);--color-amber-50:oklch(.987 .022 95.277);--color-amber-100:oklch(.962 .059 95.617);--color-amber-200:oklch(.924 .12 95.746);--color-amber-300:oklch(.879 .169 91.605);--color-amber-400:oklch(.828 .189 84.429);--color-amber-500:oklch(.769 .188 70.08);--color-amber-600:oklch(.666 .179 58.318);--color-amber-700:oklch(.555 .163 48.998);--color-amber-800:oklch(.473 .137 46.201);--color-amber-900:oklch(.414 .112 45.904);--color-amber-950:oklch(.279 .077 45.635);--color-yellow-50:oklch(.987 .026 102.212);--color-yellow-100:oklch(.973 .071 103.193);--color-yellow-200:oklch(.945 .129 101.54);--color-yellow-300:oklch(.905 .182 98.111);--color-yellow-400:oklch(.852 .199 91.936);--color-yellow-500:oklch(.795 .184 86.047);--color-yellow-600:oklch(.681 .162 75.834);--color-yellow-700:oklch(.554 .135 66.442);--color-yellow-800:oklch(.476 .114 61.907);--color-yellow-900:oklch(.421 .095 57.708);--color-yellow-950:oklch(.286 .066 53.813);--color-lime-50:oklch(.986 .031 120.757);--color-lime-100:oklch(.967 .067 122.328);--color-lime-200:oklch(.938 .127 124.321);--color-lime-300:oklch(.897 .196 126.665);--color-lime-400:oklch(.841 .238 128.85);--color-lime-500:oklch(.768 .233 130.85);--color-lime-600:oklch(.648 .2 131.684);--color-lime-700:oklch(.532 .157 131.589);--color-lime-800:oklch(.453 .124 130.933);--color-lime-900:oklch(.405 .101 131.063);--color-lime-950:oklch(.274 .072 132.109);--color-green-50:oklch(.982 .018 155.826);--color-green-100:oklch(.962 .044 156.743);--color-green-200:oklch(.925 .084 155.995);--color-green-300:oklch(.871 .15 154.449);--color-green-400:oklch(.792 .209 151.711);--color-green-500:oklch(.723 .219 149.579);--color-green-600:oklch(.627 .194 149.214);--color-green-700:oklch(.527 .154 150.069);--color-green-800:oklch(.448 .119 151.328);--color-green-900:oklch(.393 .095 152.535);--color-green-950:oklch(.266 .065 152.934);--color-emerald-50:oklch(.979 .021 166.113);--color-emerald-100:oklch(.95 .052 163.051);--color-emerald-200:oklch(.905 .093 164.15);--color-emerald-300:oklch(.845 .143 164.978);--color-emerald-400:oklch(.765 .177 163.223);--color-emerald-500:oklch(.696 .17 162.48);--color-emerald-600:oklch(.596 .145 163.225);--color-emerald-700:oklch(.508 .118 165.612);--color-emerald-800:oklch(.432 .095 166.913);--color-emerald-900:oklch(.378 .077 168.94);--color-emerald-950:oklch(.262 .051 172.552);--color-teal-50:oklch(.984 .014 180.72);--color-teal-100:oklch(.953 .051 180.801);--color-teal-200:oklch(.91 .096 180.426);--color-teal-300:oklch(.855 .138 181.071);--color-teal-400:oklch(.777 .152 181.912);--color-teal-500:oklch(.704 .14 182.503);--color-teal-600:oklch(.6 .118 184.704);--color-teal-700:oklch(.511 .096 186.391);--color-teal-800:oklch(.437 .078 188.216);--color-teal-900:oklch(.386 .063 188.416);--color-teal-950:oklch(.277 .046 192.524);--color-cyan-50:oklch(.984 .019 200.873);--color-cyan-100:oklch(.956 .045 203.388);--color-cyan-200:oklch(.917 .08 205.041);--color-cyan-300:oklch(.865 .127 207.078);--color-cyan-400:oklch(.789 .154 211.53);--color-cyan-500:oklch(.715 .143 215.221);--color-cyan-600:oklch(.609 .126 221.723);--color-cyan-700:oklch(.52 .105 223.128);--color-cyan-800:oklch(.45 .085 224.283);--color-cyan-900:oklch(.398 .07 227.392);--color-cyan-950:oklch(.302 .056 229.695);--color-sky-50:oklch(.977 .013 236.62);--color-sky-100:oklch(.951 .026 236.824);--color-sky-200:oklch(.901 .058 230.902);--color-sky-300:oklch(.828 .111 230.318);--color-sky-400:oklch(.746 .16 232.661);--color-sky-500:oklch(.685 .169 237.323);--color-sky-600:oklch(.588 .158 241.966);--color-sky-700:oklch(.5 .134 242.749);--color-sky-800:oklch(.443 .11 240.79);--color-sky-900:oklch(.391 .09 240.876);--color-sky-950:oklch(.293 .066 243.157);--color-blue-50:oklch(.97 .014 254.604);--color-blue-100:oklch(.932 .032 255.585);--color-blue-200:oklch(.882 .059 254.128);--color-blue-300:oklch(.809 .105 251.813);--color-blue-400:oklch(.707 .165 254.624);--color-blue-500:oklch(.623 .214 259.815);--color-blue-600:oklch(.546 .245 262.881);--color-blue-700:oklch(.488 .243 264.376);--color-blue-800:oklch(.424 .199 265.638);--color-blue-900:oklch(.379 .146 265.522);--color-blue-950:oklch(.282 .091 267.935);--color-indigo-50:oklch(.962 .018 272.314);--color-indigo-100:oklch(.93 .034 272.788);--color-indigo-200:oklch(.87 .065 274.039);--color-indigo-300:oklch(.785 .115 274.713);--color-indigo-400:oklch(.673 .182 276.935);--color-indigo-500:oklch(.585 .233 277.117);--color-indigo-600:oklch(.511 .262 276.966);--color-indigo-700:oklch(.457 .24 277.023);--color-indigo-800:oklch(.398 .195 277.366);--color-indigo-900:oklch(.359 .144 278.697);--color-indigo-950:oklch(.257 .09 281.288);--color-violet-50:oklch(.969 .016 293.756);--color-violet-100:oklch(.943 .029 294.588);--color-violet-200:oklch(.894 .057 293.283);--color-violet-300:oklch(.811 .111 293.571);--color-violet-400:oklch(.702 .183 293.541);--color-violet-500:oklch(.606 .25 292.717);--color-violet-600:oklch(.541 .281 293.009);--color-violet-700:oklch(.491 .27 292.581);--color-violet-800:oklch(.432 .232 292.759);--color-violet-900:oklch(.38 .189 293.745);--color-violet-950:oklch(.283 .141 291.089);--color-purple-50:oklch(.977 .014 308.299);--color-purple-100:oklch(.946 .033 307.174);--color-purple-200:oklch(.902 .063 306.703);--color-purple-300:oklch(.827 .119 306.383);--color-purple-400:oklch(.714 .203 305.504);--color-purple-500:oklch(.627 .265 303.9);--color-purple-600:oklch(.558 .288 302.321);--color-purple-700:oklch(.496 .265 301.924);--color-purple-800:oklch(.438 .218 303.724);--color-purple-900:oklch(.381 .176 304.987);--color-purple-950:oklch(.291 .149 302.717);--color-fuchsia-50:oklch(.977 .017 320.058);--color-fuchsia-100:oklch(.952 .037 318.852);--color-fuchsia-200:oklch(.903 .076 319.62);--color-fuchsia-300:oklch(.833 .145 321.434);--color-fuchsia-400:oklch(.74 .238 322.16);--color-fuchsia-500:oklch(.667 .295 322.15);--color-fuchsia-600:oklch(.591 .293 322.896);--color-fuchsia-700:oklch(.518 .253 323.949);--color-fuchsia-800:oklch(.452 .211 324.591);--color-fuchsia-900:oklch(.401 .17 325.612);--color-fuchsia-950:oklch(.293 .136 325.661);--color-pink-50:oklch(.971 .014 343.198);--color-pink-100:oklch(.948 .028 342.258);--color-pink-200:oklch(.899 .061 343.231);--color-pink-300:oklch(.823 .12 346.018);--color-pink-400:oklch(.718 .202 349.761);--color-pink-500:oklch(.656 .241 354.308);--color-pink-600:oklch(.592 .249 .584);--color-pink-700:oklch(.525 .223 3.958);--color-pink-800:oklch(.459 .187 3.815);--color-pink-900:oklch(.408 .153 2.432);--color-pink-950:oklch(.284 .109 3.907);--color-rose-50:oklch(.969 .015 12.422);--color-rose-100:oklch(.941 .03 12.58);--color-rose-200:oklch(.892 .058 10.001);--color-rose-300:oklch(.81 .117 11.638);--color-rose-400:oklch(.712 .194 13.428);--color-rose-500:oklch(.645 .246 16.439);--color-rose-600:oklch(.586 .253 17.585);--color-rose-700:oklch(.514 .222 16.935);--color-rose-800:oklch(.455 .188 13.697);--color-rose-900:oklch(.41 .159 10.272);--color-rose-950:oklch(.271 .105 12.094);--color-slate-50:oklch(.984 .003 247.858);--color-slate-100:oklch(.968 .007 247.896);--color-slate-200:oklch(.929 .013 255.508);--color-slate-300:oklch(.869 .022 252.894);--color-slate-400:oklch(.704 .04 256.788);--color-slate-500:oklch(.554 .046 257.417);--color-slate-600:oklch(.446 .043 257.281);--color-slate-700:oklch(.372 .044 257.287);--color-slate-800:oklch(.279 .041 260.031);--color-slate-900:oklch(.208 .042 265.755);--color-slate-950:oklch(.129 .042 264.695);--color-gray-50:oklch(.985 .002 247.839);--color-gray-100:oklch(.967 .003 264.542);--color-gray-200:oklch(.928 .006 264.531);--color-gray-300:oklch(.872 .01 258.338);--color-gray-400:oklch(.707 .022 261.325);--color-gray-500:oklch(.551 .027 264.364);--color-gray-600:oklch(.446 .03 256.802);--color-gray-700:oklch(.373 .034 259.733);--color-gray-800:oklch(.278 .033 256.848);--color-gray-900:oklch(.21 .034 264.665);--color-gray-950:oklch(.13 .028 261.692);--color-zinc-50:oklch(.985 0 0);--color-zinc-100:oklch(.967 .001 286.375);--color-zinc-200:oklch(.92 .004 286.32);--color-zinc-300:oklch(.871 .006 286.286);--color-zinc-400:oklch(.705 .015 286.067);--color-zinc-500:oklch(.552 .016 285.938);--color-zinc-600:oklch(.442 .017 285.786);--color-zinc-700:oklch(.37 .013 285.805);--color-zinc-800:oklch(.274 .006 286.033);--color-zinc-900:oklch(.21 .006 285.885);--color-zinc-950:oklch(.141 .005 285.823);--color-neutral-50:oklch(.985 0 0);--color-neutral-100:oklch(.97 0 0);--color-neutral-200:oklch(.922 0 0);--color-neutral-300:oklch(.87 0 0);--color-neutral-400:oklch(.708 0 0);--color-neutral-500:oklch(.556 0 0);--color-neutral-600:oklch(.439 0 0);--color-neutral-700:oklch(.371 0 0);--color-neutral-800:oklch(.269 0 0);--color-neutral-900:oklch(.205 0 0);--color-neutral-950:oklch(.145 0 0);--color-stone-50:oklch(.985 .001 106.423);--color-stone-100:oklch(.97 .001 106.424);--color-stone-200:oklch(.923 .003 48.717);--color-stone-300:oklch(.869 .005 56.366);--color-stone-400:oklch(.709 .01 56.259);--color-stone-500:oklch(.553 .013 58.071);--color-stone-600:oklch(.444 .011 73.639);--color-stone-700:oklch(.374 .01 67.558);--color-stone-800:oklch(.268 .007 34.298);--color-stone-900:oklch(.216 .006 56.043);--color-stone-950:oklch(.147 .004 49.25);--color-black:#000;--color-white:#fff;--spacing:.25rem;--breakpoint-sm:40rem;--breakpoint-md:48rem;--breakpoint-lg:64rem;--breakpoint-xl:80rem;--breakpoint-2xl:96rem;--container-3xs:16rem;--container-2xs:18rem;--container-xs:20rem;--container-sm:24rem;--container-md:28rem;--container-lg:32rem;--container-xl:36rem;--container-2xl:42rem;--container-3xl:48rem;--container-4xl:56rem;--container-5xl:64rem;--container-6xl:72rem;--container-7xl:80rem;--text-xs:.75rem;--text-xs--line-height:calc(1/.75);--text-sm:.875rem;--text-sm--line-height:calc(1.25/.875);--text-base:1rem;--text-base--line-height: 1.5 ;--text-lg:1.125rem;--text-lg--line-height:calc(1.75/1.125);--text-xl:1.25rem;--text-xl--line-height:calc(1.75/1.25);--text-2xl:1.5rem;--text-2xl--line-height:calc(2/1.5);--text-3xl:1.875rem;--text-3xl--line-height: 1.2 ;--text-4xl:2.25rem;--text-4xl--line-height:calc(2.5/2.25);--text-5xl:3rem;--text-5xl--line-height:1;--text-6xl:3.75rem;--text-6xl--line-height:1;--text-7xl:4.5rem;--text-7xl--line-height:1;--text-8xl:6rem;--text-8xl--line-height:1;--text-9xl:8rem;--text-9xl--line-height:1;--font-weight-thin:100;--font-weight-extralight:200;--font-weight-light:300;--font-weight-normal:400;--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--font-weight-extrabold:800;--font-weight-black:900;--tracking-tighter:-.05em;--tracking-tight:-.025em;--tracking-normal:0em;--tracking-wide:.025em;--tracking-wider:.05em;--tracking-widest:.1em;--leading-tight:1.25;--leading-snug:1.375;--leading-normal:1.5;--leading-relaxed:1.625;--leading-loose:2;--radius-xs:.125rem;--radius-sm:.25rem;--radius-md:.375rem;--radius-lg:.5rem;--radius-xl:.75rem;--radius-2xl:1rem;--radius-3xl:1.5rem;--radius-4xl:2rem;--shadow-2xs:0 1px #0000000d;--shadow-xs:0 1px 2px 0 #0000000d;--shadow-sm:0 1px 3px 0 #0000001a,0 1px 2px -1px #0000001a;--shadow-md:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a;--shadow-lg:0 10px 15px -3px #0000001a,0 4px 6px -4px #0000001a;--shadow-xl:0 20px 25px -5px #0000001a,0 8px 10px -6px #0000001a;--shadow-2xl:0 25px 50px -12px #00000040;--inset-shadow-2xs:inset 0 1px #0000000d;--inset-shadow-xs:inset 0 1px 1px #0000000d;--inset-shadow-sm:inset 0 2px 4px #0000000d;--drop-shadow-xs:0 1px 1px #0000000d;--drop-shadow-sm:0 1px 2px #00000026;--drop-shadow-md:0 3px 3px #0000001f;--drop-shadow-lg:0 4px 4px #00000026;--drop-shadow-xl:0 9px 7px #0000001a;--drop-shadow-2xl:0 25px 25px #00000026;--ease-in:cubic-bezier(.4,0,1,1);--ease-out:cubic-bezier(0,0,.2,1);--ease-in-out:cubic-bezier(.4,0,.2,1);--animate-spin:spin 1s linear infinite;--animate-ping:ping 1s cubic-bezier(0,0,.2,1)infinite;--animate-pulse:pulse 2s cubic-bezier(.4,0,.6,1)infinite;--animate-bounce:bounce 1s infinite;--blur-xs:4px;--blur-sm:8px;--blur-md:12px;--blur-lg:16px;--blur-xl:24px;--blur-2xl:40px;--blur-3xl:64px;--perspective-dramatic:100px;--perspective-near:300px;--perspective-normal:500px;--perspective-midrange:800px;--perspective-distant:1200px;--aspect-video:16/9;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4,0,.2,1);--default-font-family:var(--font-sans);--default-font-feature-settings:var(--font-sans--font-feature-settings);--default-font-variation-settings:var(--font-sans--font-variation-settings);--default-mono-font-family:var(--font-mono);--default-mono-font-feature-settings:var(--font-mono--font-feature-settings);--default-mono-font-variation-settings:var(--font-mono--font-variation-settings)}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;line-height:1.5;font-family:var(--default-font-family,ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}body{line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring{outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1;color:color-mix(in oklab,currentColor 50%,transparent)}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;-moz-appearance:button;appearance:button}::file-selector-button{-webkit-appearance:button;-moz-appearance:button;appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}}@layer components;@layer utilities{.absolute{position:absolute}.relative{position:relative}.static{position:static}.inset-0{inset:calc(var(--spacing)*0)}.-mt-\[4\.9rem\]{margin-top:-4.9rem}.-mb-px{margin-bottom:-1px}.mb-1{margin-bottom:calc(var(--spacing)*1)}.mb-2{margin-bottom:calc(var(--spacing)*2)}.mb-4{margin-bottom:calc(var(--spacing)*4)}.mb-6{margin-bottom:calc(var(--spacing)*6)}.-ml-8{margin-left:calc(var(--spacing)*-8)}.flex{display:flex}.hidden{display:none}.inline-block{display:inline-block}.inline-flex{display:inline-flex}.table{display:table}.aspect-\[335\/376\]{aspect-ratio:335/376}.h-1{height:calc(var(--spacing)*1)}.h-1\.5{height:calc(var(--spacing)*1.5)}.h-2{height:calc(var(--spacing)*2)}.h-2\.5{height:calc(var(--spacing)*2.5)}.h-3{height:calc(var(--spacing)*3)}.h-3\.5{height:calc(var(--spacing)*3.5)}.h-14{height:calc(var(--spacing)*14)}.h-14\.5{height:calc(var(--spacing)*14.5)}.min-h-screen{min-height:100vh}.w-1{width:calc(var(--spacing)*1)}.w-1\.5{width:calc(var(--spacing)*1.5)}.w-2{width:calc(var(--spacing)*2)}.w-2\.5{width:calc(var(--spacing)*2.5)}.w-3{width:calc(var(--spacing)*3)}.w-3\.5{width:calc(var(--spacing)*3.5)}.w-\[448px\]{width:448px}.w-full{width:100%}.max-w-\[335px\]{max-width:335px}.max-w-none{max-width:none}.flex-1{flex:1}.shrink-0{flex-shrink:0}.translate-y-0{--tw-translate-y:calc(var(--spacing)*0);translate:var(--tw-translate-x)var(--tw-translate-y)}.transform{transform:var(--tw-rotate-x)var(--tw-rotate-y)var(--tw-rotate-z)var(--tw-skew-x)var(--tw-skew-y)}.flex-col{flex-direction:column}.flex-col-reverse{flex-direction:column-reverse}.items-center{align-items:center}.justify-center{justify-content:center}.justify-end{justify-content:flex-end}.gap-3{gap:calc(var(--spacing)*3)}.gap-4{gap:calc(var(--spacing)*4)}:where(.space-x-1>:not(:last-child)){--tw-space-x-reverse:0;margin-inline-start:calc(calc(var(--spacing)*1)*var(--tw-space-x-reverse));margin-inline-end:calc(calc(var(--spacing)*1)*calc(1 - var(--tw-space-x-reverse)))}.overflow-hidden{overflow:hidden}.rounded-full{border-radius:3.40282e38px}.rounded-sm{border-radius:var(--radius-sm)}.rounded-t-lg{border-top-left-radius:var(--radius-lg);border-top-right-radius:var(--radius-lg)}.rounded-br-lg{border-bottom-right-radius:var(--radius-lg)}.rounded-bl-lg{border-bottom-left-radius:var(--radius-lg)}.border{border-style:var(--tw-border-style);border-width:1px}.border-\[\#19140035\]{border-color:#19140035}.border-\[\#e3e3e0\]{border-color:#e3e3e0}.border-black{border-color:var(--color-black)}.border-transparent{border-color:#0000}.bg-\[\#1b1b18\]{background-color:#1b1b18}.bg-\[\#FDFDFC\]{background-color:#fdfdfc}.bg-\[\#dbdbd7\]{background-color:#dbdbd7}.bg-\[\#fff2f2\]{background-color:#fff2f2}.bg-white{background-color:var(--color-white)}.p-6{padding:calc(var(--spacing)*6)}.px-5{padding-inline:calc(var(--spacing)*5)}.py-1{padding-block:calc(var(--spacing)*1)}.py-1\.5{padding-block:calc(var(--spacing)*1.5)}.py-2{padding-block:calc(var(--spacing)*2)}.pb-12{padding-bottom:calc(var(--spacing)*12)}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-\[13px\]{font-size:13px}.leading-\[20px\]{--tw-leading:20px;line-height:20px}.leading-normal{--tw-leading:var(--leading-normal);line-height:var(--leading-normal)}.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.text-\[\#1b1b18\]{color:#1b1b18}.text-\[\#706f6c\]{color:#706f6c}.text-\[\#F53003\],.text-\[\#f53003\]{color:#f53003}.text-white{color:var(--color-white)}.underline{text-decoration-line:underline}.underline-offset-4{text-underline-offset:4px}.opacity-100{opacity:1}.shadow-\[0px_0px_1px_0px_rgba\(0\,0\,0\,0\.03\)\,0px_1px_2px_0px_rgba\(0\,0\,0\,0\.06\)\]{--tw-shadow:0px 0px 1px 0px var(--tw-shadow-color,#00000008),0px 1px 2px 0px var(--tw-shadow-color,#0000000f);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-\[inset_0px_0px_0px_1px_rgba\(26\,26\,0\,0\.16\)\]{--tw-shadow:inset 0px 0px 0px 1px var(--tw-shadow-color,#1a1a0029);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.\!filter{filter:var(--tw-blur,)var(--tw-brightness,)var(--tw-contrast,)var(--tw-grayscale,)var(--tw-hue-rotate,)var(--tw-invert,)var(--tw-saturate,)var(--tw-sepia,)var(--tw-drop-shadow,)!important}.filter{filter:var(--tw-blur,)var(--tw-brightness,)var(--tw-contrast,)var(--tw-grayscale,)var(--tw-hue-rotate,)var(--tw-invert,)var(--tw-saturate,)var(--tw-sepia,)var(--tw-drop-shadow,)}.transition-all{transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-opacity{transition-property:opacity;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.delay-300{transition-delay:.3s}.duration-750{--tw-duration:.75s;transition-duration:.75s}.not-has-\[nav\]\:hidden:not(:has(:is(nav))){display:none}.before\:absolute:before{content:var(--tw-content);position:absolute}.before\:top-0:before{content:var(--tw-content);top:calc(var(--spacing)*0)}.before\:top-1\/2:before{content:var(--tw-content);top:50%}.before\:bottom-0:before{content:var(--tw-content);bottom:calc(var(--spacing)*0)}.before\:bottom-1\/2:before{content:var(--tw-content);bottom:50%}.before\:left-\[0\.4rem\]:before{content:var(--tw-content);left:.4rem}.before\:border-l:before{content:var(--tw-content);border-left-style:var(--tw-border-style);border-left-width:1px}.before\:border-\[\#e3e3e0\]:before{content:var(--tw-content);border-color:#e3e3e0}@media (hover:hover){.hover\:border-\[\#1915014a\]:hover{border-color:#1915014a}.hover\:border-\[\#19140035\]:hover{border-color:#19140035}.hover\:border-black:hover{border-color:var(--color-black)}.hover\:bg-black:hover{background-color:var(--color-black)}}@media (width>=64rem){.lg\:-mt-\[6\.6rem\]{margin-top:-6.6rem}.lg\:mb-0{margin-bottom:calc(var(--spacing)*0)}.lg\:mb-6{margin-bottom:calc(var(--spacing)*6)}.lg\:-ml-px{margin-left:-1px}.lg\:ml-0{margin-left:calc(var(--spacing)*0)}.lg\:block{display:block}.lg\:aspect-auto{aspect-ratio:auto}.lg\:w-\[438px\]{width:438px}.lg\:max-w-4xl{max-width:var(--container-4xl)}.lg\:grow{flex-grow:1}.lg\:flex-row{flex-direction:row}.lg\:justify-center{justify-content:center}.lg\:rounded-t-none{border-top-left-radius:0;border-top-right-radius:0}.lg\:rounded-tl-lg{border-top-left-radius:var(--radius-lg)}.lg\:rounded-r-lg{border-top-right-radius:var(--radius-lg);border-bottom-right-radius:var(--radius-lg)}.lg\:rounded-br-none{border-bottom-right-radius:0}.lg\:p-8{padding:calc(var(--spacing)*8)}.lg\:p-20{padding:calc(var(--spacing)*20)}}@media (prefers-color-scheme:dark){.dark\:block{display:block}.dark\:hidden{display:none}.dark\:border-\[\#3E3E3A\]{border-color:#3e3e3a}.dark\:border-\[\#eeeeec\]{border-color:#eeeeec}.dark\:bg-\[\#0a0a0a\]{background-color:#0a0a0a}.dark\:bg-\[\#1D0002\]{background-color:#1d0002}.dark\:bg-\[\#3E3E3A\]{background-color:#3e3e3a}.dark\:bg-\[\#161615\]{background-color:#161615}.dark\:bg-\[\#eeeeec\]{background-color:#eeeeec}.dark\:text-\[\#1C1C1A\]{color:#1c1c1a}.dark\:text-\[\#A1A09A\]{color:#a1a09a}.dark\:text-\[\#EDEDEC\]{color:#ededec}.dark\:text-\[\#F61500\]{color:#f61500}.dark\:text-\[\#FF4433\]{color:#f43}.dark\:shadow-\[inset_0px_0px_0px_1px_\#fffaed2d\]{--tw-shadow:inset 0px 0px 0px 1px var(--tw-shadow-color,#fffaed2d);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.dark\:before\:border-\[\#3E3E3A\]:before{content:var(--tw-content);border-color:#3e3e3a}@media (hover:hover){.dark\:hover\:border-\[\#3E3E3A\]:hover{border-color:#3e3e3a}.dark\:hover\:border-\[\#62605b\]:hover{border-color:#62605b}.dark\:hover\:border-white:hover{border-color:var(--color-white)}.dark\:hover\:bg-white:hover{background-color:var(--color-white)}}}@starting-style{.starting\:translate-y-4{--tw-translate-y:calc(var(--spacing)*4);translate:var(--tw-translate-x)var(--tw-translate-y)}}@starting-style{.starting\:translate-y-6{--tw-translate-y:calc(var(--spacing)*6);translate:var(--tw-translate-x)var(--tw-translate-y)}}@starting-style{.starting\:opacity-0{opacity:0}}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes ping{75%,to{opacity:0;transform:scale(2)}}@keyframes pulse{50%{opacity:.5}}@keyframes bounce{0%,to{animation-timing-function:cubic-bezier(.8,0,1,1);transform:translateY(-25%)}50%{animation-timing-function:cubic-bezier(0,0,.2,1);transform:none}}@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-y{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-z{syntax:"*";inherits:false;initial-value:0}@property --tw-rotate-x{syntax:"*";inherits:false;initial-value:rotateX(0)}@property --tw-rotate-y{syntax:"*";inherits:false;initial-value:rotateY(0)}@property --tw-rotate-z{syntax:"*";inherits:false;initial-value:rotateZ(0)}@property --tw-skew-x{syntax:"*";inherits:false;initial-value:skewX(0)}@property --tw-skew-y{syntax:"*";inherits:false;initial-value:skewY(0)}@property --tw-space-x-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-leading{syntax:"*";inherits:false}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-duration{syntax:"*";inherits:false}@property --tw-content{syntax:"*";inherits:false;initial-value:""}
-            </style>
-        @endif
-    </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        <a
-                            href="{{ url('/dashboard') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
-                        >
-                            Dashboard
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
+/* mobile drawer */
+.mob-drawer{display:none;position:fixed;inset:0;background:var(--dark);z-index:1100;padding:4.5rem 1.75rem 2rem;flex-direction:column;gap:.25rem}
+.mob-drawer.open{display:flex}
+.mob-close{position:absolute;top:1.1rem;right:1.5rem;background:none;border:none;color:#fff;font-size:1.4rem}
+.mob-drawer a{font-size:1rem;font-weight:600;color:rgba(255,255,255,.7);padding:.8rem 0;border-bottom:1px solid var(--b-dark);transition:color .2s}
+.mob-drawer a:hover{color:#fff}
 
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </nav>
-            @endif
-        </header>
-        <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
-            <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">
-                <div class="text-[13px] leading-[20px] flex-1 p-6 pb-12 lg:p-20 bg-white dark:bg-[#161615] dark:text-[#EDEDEC] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-bl-lg rounded-br-lg lg:rounded-tl-lg lg:rounded-br-none">
-                    <h1 class="mb-1 font-medium">Let's get started</h1>
-                    <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">Laravel has an incredibly rich ecosystem. <br>We suggest starting with the following.</p>
-                    <ul class="flex flex-col mb-4 lg:mb-6">
-                        <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:top-1/2 before:bottom-0 before:left-[0.4rem] before:absolute">
-                            <span class="relative py-1 bg-white dark:bg-[#161615]">
-                                <span class="flex items-center justify-center rounded-full bg-[#FDFDFC] dark:bg-[#161615] shadow-[0px_0px_1px_0px_rgba(0,0,0,0.03),0px_1px_2px_0px_rgba(0,0,0,0.06)] w-3.5 h-3.5 border dark:border-[#3E3E3A] border-[#e3e3e0]">
-                                    <span class="rounded-full bg-[#dbdbd7] dark:bg-[#3E3E3A] w-1.5 h-1.5"></span>
-                                </span>
-                            </span>
-                            <span>
-                                Read the
-                                <a href="https://laravel.com/docs" target="_blank" class="inline-flex items-center space-x-1 font-medium underline underline-offset-4 text-[#f53003] dark:text-[#FF4433] ml-1">
-                                    <span>Documentation</span>
-                                    <svg
-                                        width="10"
-                                        height="11"
-                                        viewBox="0 0 10 11"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="w-2.5 h-2.5"
-                                    >
-                                        <path
-                                            d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
-                                            stroke="currentColor"
-                                            stroke-linecap="square"
-                                        />
-                                    </svg>
-                                </a>
-                            </span>
-                        </li>
-                        <li class="flex items-center gap-4 py-2 relative before:border-l before:border-[#e3e3e0] dark:before:border-[#3E3E3A] before:bottom-1/2 before:top-0 before:left-[0.4rem] before:absolute">
-                            <span class="relative py-1 bg-white dark:bg-[#161615]">
-                                <span class="flex items-center justify-center rounded-full bg-[#FDFDFC] dark:bg-[#161615] shadow-[0px_0px_1px_0px_rgba(0,0,0,0.03),0px_1px_2px_0px_rgba(0,0,0,0.06)] w-3.5 h-3.5 border dark:border-[#3E3E3A] border-[#e3e3e0]">
-                                    <span class="rounded-full bg-[#dbdbd7] dark:bg-[#3E3E3A] w-1.5 h-1.5"></span>
-                                </span>
-                            </span>
-                            <span>
-                                Watch video tutorials at
-                                <a href="https://laracasts.com" target="_blank" class="inline-flex items-center space-x-1 font-medium underline underline-offset-4 text-[#f53003] dark:text-[#FF4433] ml-1">
-                                    <span>Laracasts</span>
-                                    <svg
-                                        width="10"
-                                        height="11"
-                                        viewBox="0 0 10 11"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="w-2.5 h-2.5"
-                                    >
-                                        <path
-                                            d="M7.70833 6.95834V2.79167H3.54167M2.5 8L7.5 3.00001"
-                                            stroke="currentColor"
-                                            stroke-linecap="square"
-                                        />
-                                    </svg>
-                                </a>
-                            </span>
-                        </li>
-                    </ul>
-                    <ul class="flex gap-3 text-sm leading-normal">
-                        <li>
-                            <a href="https://cloud.laravel.com" target="_blank" class="inline-block dark:bg-[#eeeeec] dark:border-[#eeeeec] dark:text-[#1C1C1A] dark:hover:bg-white dark:hover:border-white hover:bg-black hover:border-black px-5 py-1.5 bg-[#1b1b18] rounded-sm border border-black text-white text-sm leading-normal">
-                                Deploy now
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="bg-[#fff2f2] dark:bg-[#1D0002] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
-                    {{-- Laravel Logo --}}
-                    <svg class="w-full text-[#F53003] dark:text-[#F61500] transition-all translate-y-0 opacity-100 max-w-none duration-750 starting:opacity-0 starting:translate-y-6" viewBox="0 0 438 104" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M17.2036 -3H0V102.197H49.5189V86.7187H17.2036V-3Z" fill="currentColor" />
-                        <path d="M110.256 41.6337C108.061 38.1275 104.945 35.3731 100.905 33.3681C96.8667 31.3647 92.8016 30.3618 88.7131 30.3618C83.4247 30.3618 78.5885 31.3389 74.201 33.2923C69.8111 35.2456 66.0474 37.928 62.9059 41.3333C59.7643 44.7401 57.3198 48.6726 55.5754 53.1293C53.8287 57.589 52.9572 62.274 52.9572 67.1813C52.9572 72.1925 53.8287 76.8995 55.5754 81.3069C57.3191 85.7173 59.7636 89.6241 62.9059 93.0293C66.0474 96.4361 69.8119 99.1155 74.201 101.069C78.5885 103.022 83.4247 103.999 88.7131 103.999C92.8016 103.999 96.8667 102.997 100.905 100.994C104.945 98.9911 108.061 96.2359 110.256 92.7282V102.195H126.563V32.1642H110.256V41.6337ZM108.76 75.7472C107.762 78.4531 106.366 80.8078 104.572 82.8112C102.776 84.8161 100.606 86.4183 98.0637 87.6206C95.5202 88.823 92.7004 89.4238 89.6103 89.4238C86.5178 89.4238 83.7252 88.823 81.2324 87.6206C78.7388 86.4183 76.5949 84.8161 74.7998 82.8112C73.004 80.8078 71.6319 78.4531 70.6856 75.7472C69.7356 73.0421 69.2644 70.1868 69.2644 67.1821C69.2644 64.1758 69.7356 61.3205 70.6856 58.6154C71.6319 55.9102 73.004 53.5571 74.7998 51.5522C76.5949 49.5495 78.738 47.9451 81.2324 46.7427C83.7252 45.5404 86.5178 44.9396 89.6103 44.9396C92.7012 44.9396 95.5202 45.5404 98.0637 46.7427C100.606 47.9451 102.776 49.5487 104.572 51.5522C106.367 53.5571 107.762 55.9102 108.76 58.6154C109.756 61.3205 110.256 64.1758 110.256 67.1821C110.256 70.1868 109.756 73.0421 108.76 75.7472Z" fill="currentColor" />
-                        <path d="M242.805 41.6337C240.611 38.1275 237.494 35.3731 233.455 33.3681C229.416 31.3647 225.351 30.3618 221.262 30.3618C215.974 30.3618 211.138 31.3389 206.75 33.2923C202.36 35.2456 198.597 37.928 195.455 41.3333C192.314 44.7401 189.869 48.6726 188.125 53.1293C186.378 57.589 185.507 62.274 185.507 67.1813C185.507 72.1925 186.378 76.8995 188.125 81.3069C189.868 85.7173 192.313 89.6241 195.455 93.0293C198.597 96.4361 202.361 99.1155 206.75 101.069C211.138 103.022 215.974 103.999 221.262 103.999C225.351 103.999 229.416 102.997 233.455 100.994C237.494 98.9911 240.611 96.2359 242.805 92.7282V102.195H259.112V32.1642H242.805V41.6337ZM241.31 75.7472C240.312 78.4531 238.916 80.8078 237.122 82.8112C235.326 84.8161 233.156 86.4183 230.614 87.6206C228.07 88.823 225.251 89.4238 222.16 89.4238C219.068 89.4238 216.275 88.823 213.782 87.6206C211.289 86.4183 209.145 84.8161 207.35 82.8112C205.554 80.8078 204.182 78.4531 203.236 75.7472C202.286 73.0421 201.814 70.1868 201.814 67.1821C201.814 64.1758 202.286 61.3205 203.236 58.6154C204.182 55.9102 205.554 53.5571 207.35 51.5522C209.145 49.5495 211.288 47.9451 213.782 46.7427C216.275 45.5404 219.068 44.9396 222.16 44.9396C225.251 44.9396 228.07 45.5404 230.614 46.7427C233.156 47.9451 235.326 49.5487 237.122 51.5522C238.917 53.5571 240.312 55.9102 241.31 58.6154C242.306 61.3205 242.806 64.1758 242.806 67.1821C242.805 70.1868 242.305 73.0421 241.31 75.7472Z" fill="currentColor" />
-                        <path d="M438 -3H421.694V102.197H438V-3Z" fill="currentColor" />
-                        <path d="M139.43 102.197H155.735V48.2834H183.712V32.1665H139.43V102.197Z" fill="currentColor" />
-                        <path d="M324.49 32.1665L303.995 85.794L283.498 32.1665H266.983L293.748 102.197H314.242L341.006 32.1665H324.49Z" fill="currentColor" />
-                        <path d="M376.571 30.3656C356.603 30.3656 340.797 46.8497 340.797 67.1828C340.797 89.6597 356.094 104 378.661 104C391.29 104 399.354 99.1488 409.206 88.5848L398.189 80.0226C398.183 80.031 389.874 90.9895 377.468 90.9895C363.048 90.9895 356.977 79.3111 356.977 73.269H411.075C413.917 50.1328 398.775 30.3656 376.571 30.3656ZM357.02 61.0967C357.145 59.7487 359.023 43.3761 376.442 43.3761C393.861 43.3761 395.978 59.7464 396.099 61.0967H357.02Z" fill="currentColor" />
-                    </svg>
+/* ════════════════════════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════════════════════════ */
+.hero{min-height:100vh;background:var(--dark);position:relative;overflow:hidden;display:flex;align-items:center;padding:8rem 2rem 5rem}
+.hero-orb{position:absolute;border-radius:50%;pointer-events:none}
+.orb-1{width:900px;height:900px;background:radial-gradient(circle,hsl(201,85%,39%,.22) 0%,transparent 68%);top:-250px;left:-300px}
+.orb-2{width:700px;height:700px;background:radial-gradient(circle,hsl(265,58%,54%,.18) 0%,transparent 68%);bottom:-200px;right:5%}
+.orb-3{width:450px;height:450px;background:radial-gradient(circle,hsl(201,85%,39%,.12) 0%,transparent 68%);top:25%;right:-80px}
+.hero-dots{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.055) 1px,transparent 1px);background-size:38px 38px;pointer-events:none}
+.hero-inner{max-width:1280px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1.05fr;gap:4rem;align-items:center;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:100px;padding:.3rem .85rem;font-size:.76rem;font-weight:600;color:rgba(255,255,255,.78);letter-spacing:.04em;margin-bottom:1.5rem;width:fit-content}
+.badge-live{width:7px;height:7px;border-radius:50%;background:hsl(144,80%,50%);box-shadow:0 0 8px hsl(144,80%,50%);animation:blink 2.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.hero-h1{font-family:var(--fh);font-size:clamp(2.1rem,4.2vw,3.65rem);font-weight:900;color:#fff;line-height:1.1;letter-spacing:-.035em;margin-bottom:1.25rem}
+.hero-sub{font-size:1.05rem;color:var(--mut-l);line-height:1.72;max-width:510px;margin-bottom:2.25rem}
+.hero-btns{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center;margin-bottom:1.75rem}
+.btn-pri{display:inline-flex;align-items:center;gap:.5rem;background:var(--grad);color:#fff;font-weight:700;font-size:.95rem;padding:.875rem 1.8rem;border-radius:12px;border:none;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 28px hsl(201,85%,39%,.38);cursor:pointer}
+.btn-pri:hover{transform:translateY(-2px);box-shadow:0 12px 36px hsl(201,85%,39%,.48)}
+.btn-ghost{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.07);color:rgba(255,255,255,.82);font-weight:600;font-size:.95rem;padding:.875rem 1.8rem;border-radius:12px;border:1px solid rgba(255,255,255,.11);transition:background .2s,border-color .2s,transform .2s}
+.btn-ghost:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.22);transform:translateY(-2px)}
+.hero-demo{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.demo-label{font-size:.73rem;color:var(--mut);font-weight:500}
+.demo-chip{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:.18rem .6rem;font-size:.7rem;font-family:'Courier New',monospace;color:rgba(255,255,255,.55)}
 
-                    {{-- Light Mode 12 SVG --}}
-                    <svg class="w-[448px] max-w-none relative -mt-[4.9rem] -ml-8 lg:ml-0 lg:-mt-[6.6rem] dark:hidden" viewBox="0 0 440 376" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z" fill="black" />
-                            <path d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z" fill="black" />
-                            <path d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z" stroke="#1B1B18" stroke-width="1" />
-                            <path d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z" stroke="#1B1B18" stroke-width="1" />
-                            <path d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z" fill="#F8B803" />
-                            <path d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z" fill="#F8B803" />
-                            <path d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z" stroke="#1B1B18" stroke-width="1" />
-                            <path d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z" stroke="#1B1B18" stroke-width="1" />
-                        </g>
-                        <g style="mix-blend-mode: hard-light" class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" fill="#F0ACB8" />
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" fill="#F0ACB8" />
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" stroke="#1B1B18" stroke-width="1" />
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" stroke="#1B1B18" stroke-width="1" />
-                        </g>
-                        <g style="mix-blend-mode: plus-darker" class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M230.951 281.792L231.282 281.793C238.128 274.907 248.453 265.823 262.256 254.539C275.617 243.256 285.666 234.267 292.402 227.573C299.027 220.688 303.554 213.421 305.983 205.771C308.412 198.12 307.253 190.183 302.504 181.959C297.203 172.778 289.749 165.415 280.142 159.868C270.645 154.13 260.596 151.26 249.995 151.26C239.615 151.26 232.823 154.033 229.621 159.579C226.309 164.934 227.413 172.393 232.935 181.956L168.335 181.954C159.058 165.888 155.082 151.543 156.407 138.92C157.953 126.298 164.247 116.544 175.289 109.659C186.442 102.583 201.294 99.045 219.846 99.0457C239.281 99.0464 258.551 102.585 277.655 109.663C296.649 116.549 313.986 126.303 329.667 138.927C345.349 151.551 357.827 165.895 367.104 181.961C375.718 196.88 379.528 209.981 378.535 221.265C377.762 232.549 374.063 242.399 367.438 250.814C361.033 259.229 351.095 269.557 337.624 281.796L419.782 281.8L448.605 331.719L259.774 331.712L230.951 281.792Z" fill="#F3BEC7" />
-                            <path d="M51.8063 152.402L28.9479 152.401L-0.0411453 102.195L85.7608 102.198L218.282 331.711L155.339 331.709L51.8063 152.402Z" fill="#F3BEC7" />
-                            <path d="M230.951 281.792L231.282 281.793C238.128 274.907 248.453 265.823 262.256 254.539C275.617 243.256 285.666 234.267 292.402 227.573C299.027 220.688 303.554 213.421 305.983 205.771C308.412 198.12 307.253 190.183 302.504 181.959C297.203 172.778 289.749 165.415 280.142 159.868C270.645 154.13 260.596 151.26 249.995 151.26C239.615 151.26 232.823 154.033 229.621 159.579C226.309 164.934 227.413 172.393 232.935 181.956L168.335 181.954C159.058 165.888 155.082 151.543 156.407 138.92C157.953 126.298 164.247 116.544 175.289 109.659C186.442 102.583 201.294 99.045 219.846 99.0457C239.281 99.0464 258.551 102.585 277.655 109.663C296.649 116.549 313.986 126.303 329.667 138.927C345.349 151.551 357.827 165.895 367.104 181.961C375.718 196.88 379.528 209.981 378.535 221.265C377.762 232.549 374.063 242.399 367.438 250.814C361.033 259.229 351.095 269.557 337.624 281.796L419.782 281.8L448.605 331.719L259.774 331.712L230.951 281.792Z" stroke="#1B1B18" stroke-width="1" />
-                            <path d="M51.8063 152.402L28.9479 152.401L-0.0411453 102.195L85.7608 102.198L218.282 331.711L155.339 331.709L51.8063 152.402Z" stroke="#1B1B18" stroke-width="1" />
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M188.467 355.363L188.798 355.363C195.644 348.478 205.969 339.393 219.772 328.11C233.133 316.826 243.181 307.837 249.917 301.144C253.696 297.217 256.792 293.166 259.205 288.991C261.024 285.845 262.455 282.628 263.499 279.341C265.928 271.691 264.768 263.753 260.02 255.529C254.719 246.349 247.265 238.985 237.657 233.438C228.16 227.7 218.111 224.831 207.51 224.83C197.13 224.83 190.339 227.603 187.137 233.149C183.824 238.504 184.929 245.963 190.45 255.527L125.851 255.524C116.574 239.458 112.598 225.114 113.923 212.491C114.615 206.836 116.261 201.756 118.859 197.253C122.061 191.704 126.709 187.03 132.805 183.229C143.958 176.153 158.81 172.615 177.362 172.616C196.797 172.617 216.067 176.156 235.171 183.233C254.164 190.119 271.502 199.874 287.183 212.497C302.864 225.121 315.343 239.466 324.62 255.532C333.233 270.45 337.044 283.551 336.05 294.835C335.46 303.459 333.16 311.245 329.151 318.194C327.915 320.337 326.515 322.4 324.953 324.384C318.549 332.799 308.611 343.127 295.139 355.367L377.297 355.37L406.121 405.289L217.29 405.282L188.467 355.363Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M9.32197 225.972L-13.5365 225.971L-42.5255 175.765L43.2765 175.768L175.798 405.282L112.854 405.279L9.32197 225.972Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M345.247 111.915C329.566 99.2919 312.229 89.5371 293.235 82.6512L235.167 183.228C254.161 190.114 271.498 199.869 287.179 212.492L345.247 111.915Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M382.686 154.964C373.41 138.898 360.931 124.553 345.25 111.93L287.182 212.506C302.863 225.13 315.342 239.475 324.618 255.541L382.686 154.964Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M293.243 82.6472C274.139 75.57 254.869 72.031 235.434 72.0303L177.366 172.607C196.801 172.608 216.071 176.147 235.175 183.224L293.243 82.6472Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M394.118 194.257C395.112 182.973 391.301 169.872 382.688 154.953L324.619 255.53C333.233 270.448 337.044 283.55 336.05 294.834L394.118 194.257Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M235.432 72.0311C216.88 72.0304 202.027 75.5681 190.875 82.6442L132.806 183.221C143.959 176.145 158.812 172.607 177.363 172.608L235.432 72.0311Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M265.59 124.25C276.191 124.251 286.24 127.12 295.737 132.858L237.669 233.435C228.172 227.697 218.123 224.828 207.522 224.827L265.59 124.25Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M295.719 132.859C305.326 138.406 312.78 145.77 318.081 154.95L260.013 255.527C254.712 246.347 247.258 238.983 237.651 233.436L295.719 132.859Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M387.218 217.608C391.227 210.66 393.527 202.874 394.117 194.25L336.049 294.827C335.459 303.451 333.159 311.237 329.15 318.185L387.218 217.608Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M245.211 132.577C248.413 127.03 255.204 124.257 265.584 124.258L207.516 224.835C197.136 224.834 190.345 227.607 187.143 233.154L245.211 132.577Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M318.094 154.945C322.842 163.17 324.002 171.107 321.573 178.757L263.505 279.334C265.934 271.684 264.774 263.746 260.026 255.522L318.094 154.945Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M176.925 96.6737C180.127 91.1249 184.776 86.4503 190.871 82.6499L132.803 183.227C126.708 187.027 122.059 191.702 118.857 197.25L176.925 96.6737Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M387.226 217.606C385.989 219.749 384.59 221.813 383.028 223.797L324.96 324.373C326.522 322.39 327.921 320.326 329.157 318.183L387.226 217.606Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M317.269 188.408C319.087 185.262 320.519 182.045 321.562 178.758L263.494 279.335C262.451 282.622 261.019 285.839 259.201 288.985L317.269 188.408Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M245.208 132.573C241.895 137.928 243 145.387 248.522 154.95L190.454 255.527C184.932 245.964 183.827 238.505 187.14 233.15L245.208 132.573Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M176.93 96.6719C174.331 101.175 172.686 106.255 171.993 111.91L113.925 212.487C114.618 206.831 116.263 201.752 118.862 197.249L176.93 96.6719Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M317.266 188.413C314.853 192.589 311.757 196.64 307.978 200.566L249.91 301.143C253.689 297.216 256.785 293.166 259.198 288.99L317.266 188.413Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M464.198 304.708L435.375 254.789L377.307 355.366L406.13 405.285L464.198 304.708Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M353.209 254.787C366.68 242.548 376.618 232.22 383.023 223.805L324.955 324.382C318.55 332.797 308.612 343.124 295.141 355.364L353.209 254.787Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M435.37 254.787L353.212 254.784L295.144 355.361L377.302 355.364L435.37 254.787Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M183.921 154.947L248.521 154.95L190.453 255.527L125.853 255.524L183.921 154.947Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M171.992 111.914C170.668 124.537 174.643 138.881 183.92 154.947L125.852 255.524C116.575 239.458 112.599 225.114 113.924 212.491L171.992 111.914Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M307.987 200.562C301.251 207.256 291.203 216.244 277.842 227.528L219.774 328.105C233.135 316.821 243.183 307.832 249.919 301.139L307.987 200.562Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M15.5469 75.1797L44.5359 125.386L-13.5321 225.963L-42.5212 175.756L15.5469 75.1797Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M277.836 227.536C264.033 238.82 253.708 247.904 246.862 254.789L188.794 355.366C195.64 348.481 205.965 339.397 219.768 328.113L277.836 227.536Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M275.358 304.706L464.189 304.713L406.12 405.29L217.29 405.283L275.358 304.706Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M44.5279 125.39L67.3864 125.39L9.31834 225.967L-13.5401 225.966L44.5279 125.39Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M101.341 75.1911L233.863 304.705L175.795 405.282L43.2733 175.768L101.341 75.1911ZM15.5431 75.19L-42.525 175.767L43.277 175.77L101.345 75.1932L15.5431 75.19Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M246.866 254.784L246.534 254.784L188.466 355.361L188.798 355.361L246.866 254.784Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M246.539 254.781L275.362 304.701L217.294 405.277L188.471 355.358L246.539 254.781Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M67.3906 125.391L170.923 304.698L112.855 405.275L9.32257 225.967L67.3906 125.391Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                            <path d="M170.921 304.699L233.865 304.701L175.797 405.278L112.853 405.276L170.921 304.699Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="bevel" />
-                        </g>
-                        <g style="mix-blend-mode: hard-light" class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z" fill="#F0ACB8" />
-                            <path d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z" stroke="#1B1B18" stroke-width="1" stroke-linejoin="round" />
-                        </g>
-                        <g style="mix-blend-mode: hard-light" class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z" fill="#F0ACB8" />
-                            <path d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z" stroke="#1B1B18" stroke-width="1" />
-                        </g>
-                    </svg>
+/* ─── Dashboard mockup ─── */
+.mockup-wrap{position:relative}
+.mockup-glow{position:absolute;inset:-60px;background:radial-gradient(ellipse at 50% 60%,hsl(201,85%,39%,.14) 0%,transparent 68%);pointer-events:none;z-index:0}
+.mockup-frame{position:relative;z-index:1;border-radius:15px;overflow:hidden;border:1px solid rgba(255,255,255,.11);box-shadow:0 0 0 1px rgba(255,255,255,.04),0 32px 80px rgba(0,0,0,.65),0 0 60px rgba(15,115,186,.08);transform:perspective(1100px) rotateY(-5deg) rotateX(2.5deg);transform-origin:left center;animation:mockup-float 7s ease-in-out infinite}
+@keyframes mockup-float{0%,100%{transform:perspective(1100px) rotateY(-5deg) rotateX(2.5deg) translateY(0)}50%{transform:perspective(1100px) rotateY(-5deg) rotateX(2.5deg) translateY(-12px)}}
+/* Titlebar */
+.m-bar{background:#1a2840;padding:.6rem .95rem;display:flex;align-items:center;gap:.45rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.m-dot{width:9px;height:9px;border-radius:50%}
+.m-red{background:#ff5f57}.m-yel{background:#febc2e}.m-grn{background:#28c840}
+.m-url{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:.17rem .55rem;font-size:.65rem;color:rgba(255,255,255,.35);margin:0 .45rem;font-family:monospace}
+/* Body */
+.m-body{background:#0d1628;display:grid;grid-template-columns:155px 1fr;height:355px;overflow:hidden}
+.m-side{background:#091220;padding:.65rem .45rem;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:.1rem}
+.m-brand{display:flex;align-items:center;gap:.4rem;padding:.25rem .4rem .65rem;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:.25rem}
+.m-brand-ic{width:21px;height:21px;border-radius:6px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff}
+.m-brand-nm{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.88);font-family:var(--fh)}
+.m-nav{display:flex;align-items:center;gap:.35rem;padding:.3rem .45rem;border-radius:6px;font-size:.59rem;color:rgba(255,255,255,.4)}
+.m-nav.on{background:rgba(15,115,186,.18);color:hsl(201,85%,65%)}
+.m-nav i{font-size:.65rem}
+/* Main */
+.m-main{padding:.8rem;display:flex;flex-direction:column;gap:.55rem;overflow:hidden}
+.m-top{display:flex;align-items:center;justify-content:space-between}
+.m-pg-title{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.9);font-family:var(--fh)}
+.m-usr{display:flex;align-items:center;gap:.3rem}
+.m-av{width:19px;height:19px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:700;color:#fff}
+.m-un{font-size:.58rem;color:rgba(255,255,255,.45)}
+/* Stat row */
+.m-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem}
+.m-sc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:7px;padding:.4rem .45rem}
+.m-sl{font-size:.5rem;color:rgba(255,255,255,.38);margin-bottom:.15rem}
+.m-sv{font-size:.82rem;font-weight:700;color:rgba(255,255,255,.9);font-family:var(--fh)}
+.m-ss{font-size:.45rem;color:hsl(144,60%,52%)}
+/* Grid 2 */
+.m-g2{display:grid;grid-template-columns:1.45fr 1fr;gap:.35rem;flex:1;min-height:0}
+.m-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:7px;padding:.4rem .45rem;overflow:hidden}
+.m-ct{font-size:.56rem;font-weight:600;color:rgba(255,255,255,.65);margin-bottom:.3rem}
+.m-row{display:flex;align-items:center;gap:.3rem;padding:.18rem 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.m-row:last-child{border-bottom:none}
+.m-rd{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.m-rn{font-size:.52rem;color:rgba(255,255,255,.55);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbg{font-size:.43rem;padding:.08rem .28rem;border-radius:4px;font-weight:600;flex-shrink:0}
+.bg-g{background:rgba(34,197,94,.13);color:hsl(144,60%,55%)}
+.bg-y{background:rgba(234,179,8,.13);color:hsl(45,90%,60%)}
+.bg-b{background:rgba(15,115,186,.18);color:hsl(201,85%,65%)}
+.bg-r{background:rgba(239,68,68,.13);color:#f87171}
+/* Chart bars */
+.m-bars{display:flex;align-items:flex-end;gap:.18rem;height:68px;margin-top:.2rem;padding:0 .1rem}
+.m-bar{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg,hsl(201,85%,50%,.75),hsl(265,58%,54%,.55))}
 
-                    {{-- Dark Mode 12 SVG --}}
-                    <svg class="w-[448px] max-w-none relative -mt-[4.9rem] -ml-8 lg:ml-0 lg:-mt-[6.6rem] hidden dark:block" viewBox="0 0 440 376" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z" fill="black"/>
-                            <path d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z" fill="black"/>
-                            <path d="M188.263 355.73L188.595 355.73C195.441 348.845 205.766 339.761 219.569 328.477C232.93 317.193 242.978 308.205 249.714 301.511C256.34 294.626 260.867 287.358 263.296 279.708C265.725 272.058 264.565 264.121 259.816 255.896C254.516 246.716 247.062 239.352 237.454 233.805C227.957 228.067 217.908 225.198 207.307 225.198C196.927 225.197 190.136 227.97 186.934 233.516C183.621 238.872 184.726 246.331 190.247 255.894L125.647 255.891C116.371 239.825 112.395 225.481 113.72 212.858C115.265 200.235 121.559 190.481 132.602 183.596C143.754 176.52 158.607 172.982 177.159 172.983C196.594 172.984 215.863 176.523 234.968 183.6C253.961 190.486 271.299 200.241 286.98 212.864C302.661 225.488 315.14 239.833 324.416 255.899C333.03 270.817 336.841 283.918 335.847 295.203C335.075 306.487 331.376 316.336 324.75 324.751C318.346 333.167 308.408 343.494 294.936 355.734L377.094 355.737L405.917 405.656L217.087 405.649L188.263 355.73Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M9.11884 226.339L-13.7396 226.338L-42.7286 176.132L43.0733 176.135L175.595 405.649L112.651 405.647L9.11884 226.339Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z" fill="#391800"/>
-                            <path d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z" fill="#391800"/>
-                            <path d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4" style="mix-blend-mode:hard-light">
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" fill="#733000"/>
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" fill="#733000"/>
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.726 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M188.467 355.363L188.798 355.363C195.644 348.478 205.969 339.393 219.772 328.11C233.133 316.826 243.181 307.837 249.917 301.144C253.696 297.217 256.792 293.166 259.205 288.991C261.024 285.845 262.455 282.628 263.499 279.341C265.928 271.691 264.768 263.753 260.02 255.529C254.719 246.349 247.265 238.985 237.657 233.438C228.16 227.7 218.111 224.831 207.51 224.83C197.13 224.83 190.339 227.603 187.137 233.149C183.824 238.504 184.929 245.963 190.45 255.527L125.851 255.524C116.574 239.458 112.598 225.114 113.923 212.491C114.615 206.836 116.261 201.756 118.859 197.253C122.061 191.704 126.709 187.03 132.805 183.229C143.958 176.153 158.81 172.615 177.362 172.616C196.797 172.617 216.067 176.156 235.171 183.233C254.164 190.119 271.502 199.874 287.183 212.497C302.864 225.121 315.343 239.466 324.62 255.532C333.233 270.45 337.044 283.551 336.05 294.835C335.46 303.459 333.16 311.245 329.151 318.194C327.915 320.337 326.515 322.4 324.953 324.384C318.549 332.799 308.611 343.127 295.139 355.367L377.297 355.37L406.121 405.289L217.29 405.282L188.467 355.363Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M9.32197 225.972L-13.5365 225.971L-42.5255 175.765L43.2765 175.768L175.798 405.282L112.854 405.279L9.32197 225.972Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M345.247 111.915C329.566 99.2919 312.229 89.5371 293.235 82.6512L235.167 183.228C254.161 190.114 271.498 199.869 287.179 212.492L345.247 111.915Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M382.686 154.964C373.41 138.898 360.931 124.553 345.25 111.93L287.182 212.506C302.863 225.13 315.342 239.475 324.618 255.541L382.686 154.964Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M293.243 82.6472C274.139 75.57 254.869 72.031 235.434 72.0303L177.366 172.607C196.801 172.608 216.071 176.147 235.175 183.224L293.243 82.6472Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M394.118 194.257C395.112 182.973 391.301 169.872 382.688 154.953L324.619 255.53C333.233 270.448 337.044 283.55 336.05 294.834L394.118 194.257Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M235.432 72.0311C216.88 72.0304 202.027 75.5681 190.875 82.6442L132.806 183.221C143.959 176.145 158.812 172.607 177.363 172.608L235.432 72.0311Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M265.59 124.25C276.191 124.251 286.24 127.12 295.737 132.858L237.669 233.435C228.172 227.697 218.123 224.828 207.522 224.827L265.59 124.25Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M295.719 132.859C305.326 138.406 312.78 145.77 318.081 154.95L260.013 255.527C254.712 246.347 247.258 238.983 237.651 233.436L295.719 132.859Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M387.218 217.608C391.227 210.66 393.527 202.874 394.117 194.25L336.049 294.827C335.459 303.451 333.159 311.237 329.15 318.185L387.218 217.608Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M245.211 132.577C248.413 127.03 255.204 124.257 265.584 124.258L207.516 224.835C197.136 224.834 190.345 227.607 187.143 233.154L245.211 132.577Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M318.094 154.945C322.842 163.17 324.002 171.107 321.573 178.757L263.505 279.334C265.934 271.684 264.774 263.746 260.026 255.522L318.094 154.945Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M176.925 96.6737C180.127 91.1249 184.776 86.4503 190.871 82.6499L132.803 183.227C126.708 187.027 122.059 191.702 118.857 197.25L176.925 96.6737Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M387.226 217.606C385.989 219.749 384.59 221.813 383.028 223.797L324.96 324.373C326.522 322.39 327.921 320.326 329.157 318.183L387.226 217.606Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M317.269 188.408C319.087 185.262 320.519 182.045 321.562 178.758L263.494 279.335C262.451 282.622 261.019 285.839 259.201 288.985L317.269 188.408Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M245.208 132.573C241.895 137.928 243 145.387 248.522 154.95L190.454 255.527C184.932 245.964 183.827 238.505 187.14 233.15L245.208 132.573Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M176.93 96.6719C174.331 101.175 172.686 106.255 171.993 111.91L113.925 212.487C114.618 206.831 116.263 201.752 118.862 197.249L176.93 96.6719Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M317.266 188.413C314.853 192.589 311.757 196.64 307.978 200.566L249.91 301.143C253.689 297.216 256.785 293.166 259.198 288.99L317.266 188.413Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M464.198 304.708L435.375 254.789L377.307 355.366L406.13 405.285L464.198 304.708Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M353.209 254.787C366.68 242.548 376.618 232.22 383.023 223.805L324.955 324.382C318.55 332.797 308.612 343.124 295.141 355.364L353.209 254.787Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M435.37 254.787L353.212 254.784L295.144 355.361L377.302 355.364L435.37 254.787Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M183.921 154.947L248.521 154.95L190.453 255.527L125.853 255.524L183.921 154.947Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M171.992 111.914C170.668 124.537 174.643 138.881 183.92 154.947L125.852 255.524C116.575 239.458 112.599 225.114 113.924 212.491L171.992 111.914Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M307.987 200.562C301.251 207.256 291.203 216.244 277.842 227.528L219.774 328.105C233.135 316.821 243.183 307.832 249.919 301.139L307.987 200.562Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M15.5469 75.1797L44.5359 125.386L-13.5321 225.963L-42.5212 175.756L15.5469 75.1797Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M277.836 227.536C264.033 238.82 253.708 247.904 246.862 254.789L188.794 355.366C195.64 348.481 205.965 339.397 219.768 328.113L277.836 227.536Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M275.358 304.706L464.189 304.713L406.12 405.29L217.29 405.283L275.358 304.706Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M44.5279 125.39L67.3864 125.39L9.31834 225.967L-13.5401 225.966L44.5279 125.39Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M101.341 75.1911L233.863 304.705L175.795 405.282L43.2733 175.768L101.341 75.1911ZM15.5431 75.19L-42.525 175.767L43.277 175.77L101.345 75.1932L15.5431 75.19Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M246.866 254.784L246.534 254.784L188.466 355.361L188.798 355.361L246.866 254.784Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M246.539 254.781L275.362 304.701L217.294 405.277L188.471 355.358L246.539 254.781Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M67.3906 125.391L170.923 304.698L112.855 405.275L9.32257 225.967L67.3906 125.391Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M170.921 304.699L233.865 304.701L175.797 405.278L112.853 405.276L170.921 304.699Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4" style="mix-blend-mode:hard-light">
-                            <path d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z" fill="#4B0600"/>
-                            <path d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="round"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4" style="mix-blend-mode:hard-light">
-                            <path d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z" fill="#4B0600"/>
-                            <path d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                    </svg>
-                    <div class="absolute inset-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"></div>
-                </div>
-            </main>
+/* ════════════════════════════════════════════════════════════════
+   STATS STRIP
+════════════════════════════════════════════════════════════════ */
+.stats-strip{background:#fff;border-top:1px solid #edf0f5;border-bottom:1px solid #edf0f5;padding:3.25rem 2rem}
+.stats-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;gap:1.5rem;align-items:center}
+.stat-div{background:#e5e9f0;height:48px;width:1px}
+.stat-it{text-align:center}
+.stat-num{font-family:var(--fh);font-size:2.2rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:.3rem}
+.stat-lbl{font-size:.875rem;color:#64748b;font-weight:500}
+
+/* ════════════════════════════════════════════════════════════════
+   SECTIONS
+════════════════════════════════════════════════════════════════ */
+.section{padding:6rem 2rem}
+.si{max-width:1200px;margin:0 auto}
+.eyebrow{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.7rem}
+.sec-h2{font-family:var(--fh);font-size:clamp(1.7rem,3vw,2.65rem);font-weight:800;color:#0f172a;line-height:1.18;letter-spacing:-.03em;margin-bottom:.85rem}
+.sec-p{font-size:1.02rem;color:#64748b;line-height:1.72;max-width:570px}
+.sh{margin-bottom:3.5rem}
+.sh.c{text-align:center}.sh.c .sec-p{margin:0 auto}
+.bg-sl{background:#f8fafc}
+.bg-dk{background:var(--dark)}
+
+/* ════════════════════════════════════════════════════════════════
+   FEATURES — BENTO GRID
+════════════════════════════════════════════════════════════════ */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.bc{background:#fff;border:1px solid #e2e8f2;border-radius:var(--rl);padding:1.7rem;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
+.bc:hover{transform:translateY(-3px);box-shadow:0 18px 50px rgba(15,115,186,.08);border-color:rgba(15,115,186,.22)}
+.bc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .25s}
+.bc:hover::before{opacity:1}
+.bc.s2{grid-column:span 2}
+.bc.s3{grid-column:span 3}
+/* Feature icon */
+.fi{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.9rem}
+.fi-b{background:hsl(201,85%,39%,.1);color:hsl(201,85%,39%)}
+.fi-p{background:hsl(265,58%,54%,.1);color:hsl(265,58%,54%)}
+.fi-g{background:hsl(144,60%,40%,.1);color:hsl(144,60%,40%)}
+.fi-o{background:hsl(28,90%,50%,.1);color:hsl(28,90%,50%)}
+.fi-r{background:hsl(348,75%,52%,.1);color:hsl(348,75%,52%)}
+.fi-t{background:hsl(174,72%,36%,.1);color:hsl(174,72%,36%)}
+.fi-i{background:hsl(238,58%,55%,.1);color:hsl(238,58%,55%)}
+.fi-a{background:hsl(38,90%,45%,.1);color:hsl(38,90%,45%)}
+.f-lbl{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--p);margin-bottom:.3rem}
+.f-title{font-family:var(--fh);font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:.45rem;line-height:1.3}
+.f-desc{font-size:.875rem;color:#64748b;line-height:1.62}
+.f-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.8rem}
+.ftag{font-size:.68rem;font-weight:500;background:#f1f5f9;color:#475569;padding:.18rem .55rem;border-radius:100px;border:1px solid #e2e8f0}
+/* Wide feature extras */
+.bc.s2 .f-title{font-size:1.1rem}
+.bc-extra{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.9rem}
+.bc-mini{background:#f8fafc;border:1px solid #e8edf5;border-radius:10px;padding:.75rem .9rem;display:flex;align-items:flex-start;gap:.6rem}
+.bc-mini i{color:var(--p);font-size:.9rem;margin-top:.05rem;flex-shrink:0}
+.bc-mini-t{font-size:.8rem;font-weight:600;color:#334155;margin-bottom:.15rem}
+.bc-mini-d{font-size:.73rem;color:#64748b}
+
+/* ════════════════════════════════════════════════════════════════
+   WALKTHROUGH
+════════════════════════════════════════════════════════════════ */
+.wt-section .sec-h2{color:#fff}
+.wt-section .sec-p{color:var(--mut-l)}
+.wt-section{position:relative;overflow:hidden}
+.wt-section::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,hsl(265,58%,54%,.1) 0%,transparent 70%);top:-150px;right:-100px;pointer-events:none}
+.wt-tabs{display:flex;gap:.3rem;background:rgba(255,255,255,.05);border:1px solid var(--b-dark);border-radius:12px;padding:.3rem;margin-bottom:2.25rem;flex-wrap:wrap}
+.wt-tab{flex:1;min-width:90px;padding:.55rem .85rem;border-radius:9px;border:none;background:transparent;font-size:.8rem;font-weight:600;color:var(--mut);cursor:pointer;transition:background .2s,color .2s;font-family:var(--fb)}
+.wt-tab.on{background:var(--grad);color:#fff}
+.wt-tab:not(.on):hover{color:#fff;background:rgba(255,255,255,.07)}
+.wt-panel{display:none;animation:fadeUp .3s ease}
+.wt-panel.on{display:grid;grid-template-columns:1fr 1.05fr;gap:3rem;align-items:center}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.wt-h3{font-family:var(--fh);font-size:1.55rem;font-weight:700;color:#fff;margin-bottom:.8rem;line-height:1.3}
+.wt-p{color:var(--mut-l);font-size:.95rem;line-height:1.72;margin-bottom:1.2rem}
+.wt-feats{display:flex;flex-direction:column;gap:.55rem}
+.wt-f{display:flex;align-items:flex-start;gap:.6rem}
+.wt-fi{width:21px;height:21px;border-radius:6px;background:rgba(15,115,186,.2);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:hsl(201,85%,66%);flex-shrink:0;margin-top:.05rem}
+.wt-ft{font-size:.875rem;color:var(--mut-l);line-height:1.55}
+.wt-ft strong{color:rgba(255,255,255,.88);font-weight:600}
+/* Screen */
+.wt-scr{background:var(--dark-2);border:1px solid var(--b-dark-s);border-radius:var(--rl);overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.55)}
+.wt-scr-h{background:var(--dark-3);padding:.6rem 1rem;border-bottom:1px solid var(--b-dark);display:flex;align-items:center;gap:.5rem;font-size:.68rem;color:var(--mut);font-weight:600}
+.wt-scr-h i{color:hsl(201,85%,56%)}
+.wt-scr-b{padding:.85rem}
+.scr-row{display:flex;align-items:center;gap:.7rem;padding:.5rem .55rem;border-radius:8px;border-bottom:1px solid var(--b-dark)}
+.scr-row:last-child{border-bottom:none}
+.scr-row:hover{background:rgba(255,255,255,.03)}
+.scr-av{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:#fff;flex-shrink:0}
+.scr-inf{flex:1}
+.scr-nm{font-size:.73rem;font-weight:600;color:rgba(255,255,255,.83)}
+.scr-sb{font-size:.62rem;color:var(--mut)}
+.scr-bdg{font-size:.6rem;font-weight:600;padding:.13rem .4rem;border-radius:5px}
+.bdg-grn{background:rgba(34,197,94,.14);color:hsl(144,60%,55%)}
+.bdg-yel{background:rgba(234,179,8,.14);color:hsl(45,90%,60%)}
+.bdg-blu{background:rgba(15,115,186,.18);color:hsl(201,85%,65%)}
+.bdg-red{background:rgba(239,68,68,.14);color:#f87171}
+.bdg-pur{background:rgba(139,92,246,.18);color:hsl(265,80%,75%)}
+
+/* ════════════════════════════════════════════════════════════════
+   BENEFITS
+════════════════════════════════════════════════════════════════ */
+.ben-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.ben-card{padding:2rem 1.75rem;border-radius:var(--rl);border:1px solid #e2e8f2;background:#fff;transition:transform .25s,box-shadow .25s}
+.ben-card:hover{transform:translateY(-4px);box-shadow:0 20px 56px rgba(0,0,0,.08)}
+.ben-ic{width:50px;height:50px;border-radius:13px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#fff;margin-bottom:1.2rem;box-shadow:0 6px 20px hsl(201,85%,39%,.24)}
+.ben-t{font-family:var(--fh);font-size:1.05rem;font-weight:700;color:#0f172a;margin-bottom:.5rem}
+.ben-d{font-size:.9rem;color:#64748b;line-height:1.65}
+
+/* ════════════════════════════════════════════════════════════════
+   WHY CLINOVIA
+════════════════════════════════════════════════════════════════ */
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.why-list{display:flex;flex-direction:column;gap:1.2rem}
+.why-it{display:flex;gap:.95rem;align-items:flex-start}
+.why-ic{width:37px;height:37px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff;flex-shrink:0;box-shadow:0 4px 12px hsl(201,85%,39%,.2)}
+.why-t{font-weight:700;color:#0f172a;font-size:.95rem;margin-bottom:.18rem}
+.why-d{font-size:.875rem;color:#64748b;line-height:1.62}
+/* Comparison card */
+.why-vis{background:var(--dark);border-radius:var(--rxl);padding:2rem 1.75rem;border:1px solid var(--b-dark-s);box-shadow:0 20px 60px rgba(0,0,0,.14)}
+.why-vis-h{font-family:var(--fh);font-size:.72rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.35rem}
+.cmp-row{display:grid;grid-template-columns:1fr 26px 1fr;gap:.75rem;align-items:center;margin-bottom:.7rem}
+.cmp-r{font-size:.78rem;color:rgba(255,255,255,.45);text-align:right}
+.cmp-r.good{color:rgba(255,255,255,.82);font-weight:600}
+.cmp-ic{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;justify-self:center}
+.ic-y{background:rgba(34,197,94,.14);color:hsl(144,60%,55%)}
+.ic-n{background:rgba(239,68,68,.14);color:#f87171}
+.cmp-l{font-size:.78rem;color:rgba(255,255,255,.45)}
+.why-vis-div{height:1px;background:var(--b-dark);margin:1rem 0}
+.why-vis-note{font-size:.73rem;color:var(--mut);text-align:center}
+.why-vis-note span{color:hsl(201,85%,65%);font-weight:600}
+
+/* ════════════════════════════════════════════════════════════════
+   TESTIMONIALS
+════════════════════════════════════════════════════════════════ */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.tc{background:#fff;border:1px solid #e2e8f2;border-radius:var(--rl);padding:1.75rem;transition:transform .25s,box-shadow .25s;position:relative}
+.tc:hover{transform:translateY(-3px);box-shadow:0 16px 46px rgba(0,0,0,.08)}
+.tc-stars{color:#f59e0b;font-size:.75rem;margin-bottom:.8rem}
+.tc-quote{font-size:.9rem;color:#374151;line-height:1.75;margin-bottom:1.25rem;position:relative;padding-top:.85rem}
+.tc-quote::before{content:'\201C';font-size:3.2rem;font-family:Georgia,serif;color:var(--p);opacity:.18;position:absolute;top:-.85rem;left:-.35rem;line-height:1}
+.tc-auth{display:flex;align-items:center;gap:.75rem}
+.tc-av{width:39px;height:39px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;color:#fff;flex-shrink:0}
+.tc-name{font-weight:700;font-size:.875rem;color:#0f172a}
+.tc-role{font-size:.77rem;color:#9ca3af}
+
+/* ════════════════════════════════════════════════════════════════
+   FAQ
+════════════════════════════════════════════════════════════════ */
+.faq-wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:.7rem}
+.faq-it{background:#fff;border:1px solid #e2e8f2;border-radius:var(--r);overflow:hidden;transition:border-color .2s}
+.faq-it:hover{border-color:rgba(15,115,186,.25)}
+.faq-q{width:100%;background:none;border:none;padding:1.2rem 1.45rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;cursor:pointer;text-align:left}
+.faq-qt{font-size:.93rem;font-weight:600;color:#0f172a}
+.faq-ch{width:28px;height:28px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.72rem;color:#64748b;transition:transform .3s,background .2s}
+.faq-it.open .faq-ch{transform:rotate(180deg);background:var(--grad);color:#fff}
+.faq-ans{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-it.open .faq-ans{max-height:250px}
+.faq-ans-in{padding:0 1.45rem 1.2rem;font-size:.9rem;color:#64748b;line-height:1.72}
+
+/* ════════════════════════════════════════════════════════════════
+   CTA SECTION
+════════════════════════════════════════════════════════════════ */
+.cta-sec{position:relative;overflow:hidden}
+.cta-sec::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,hsl(201,85%,39%,.22) 0%,transparent 58%),radial-gradient(ellipse at 80% 50%,hsl(265,58%,54%,.2) 0%,transparent 58%);pointer-events:none}
+.cta-inner{max-width:680px;margin:0 auto;text-align:center;position:relative;z-index:1}
+.cta-h2{font-family:var(--fh);font-size:clamp(1.75rem,3.5vw,2.9rem);font-weight:900;color:#fff;line-height:1.18;letter-spacing:-.03em;margin-bottom:.9rem}
+.cta-p{font-size:1rem;color:var(--mut-l);margin-bottom:2.25rem;line-height:1.72}
+.cta-btns{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap}
+.cta-note{margin-top:1.5rem;font-size:.78rem;color:var(--mut)}
+.cta-note strong{color:var(--mut-l)}
+.cta-creds{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.cta-demo-note{margin-top:1.25rem;font-size:.75rem;color:var(--mut);font-family:'Courier New',monospace}
+.cta-demo-note strong{color:hsl(201,85%,65%)}
+
+/* Walkthrough panel text (on dark bg) */
+.wt-content h3,.wt-h3{font-family:var(--fh);font-size:1.55rem;font-weight:700;color:#fff;margin-bottom:.8rem;line-height:1.3}
+.wt-content p,.wt-p{color:var(--mut-l);font-size:.95rem;line-height:1.72;margin-bottom:1.2rem}
+.wt-content .wt-feats{display:flex;flex-direction:column;gap:.55rem}
+.wt-content .wt-f{display:flex;align-items:flex-start;gap:.6rem}
+.wt-content .wt-fi{width:21px;height:21px;border-radius:6px;background:rgba(15,115,186,.2);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:hsl(201,85%,66%);flex-shrink:0;margin-top:.05rem}
+.wt-content .wt-ft{font-size:.875rem;color:var(--mut-l);line-height:1.55}
+.wt-content .wt-ft strong{color:rgba(255,255,255,.88);font-weight:600}
+
+/* ════════════════════════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════════════════════════ */
+footer{background:var(--dark-2);border-top:1px solid var(--b-dark);padding:4.5rem 2rem 2.25rem}
+.ft-inner{max-width:1200px;margin:0 auto}
+.ft-top{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid var(--b-dark)}
+.ft-brand-row{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;text-decoration:none}
+.ft-logo{width:34px;height:34px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff}
+.ft-name{font-family:var(--fh);font-weight:700;font-size:1.05rem;color:#fff}
+.ft-tag{font-size:.875rem;color:var(--mut);line-height:1.65;max-width:250px;margin-bottom:1.5rem}
+.ft-bdg{display:inline-flex;align-items:center;gap:.4rem;background:rgba(15,115,186,.1);border:1px solid rgba(15,115,186,.2);border-radius:8px;padding:.3rem .7rem;font-size:.7rem;color:hsl(201,85%,65%);font-weight:600}
+.ft-ch{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.88);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.05rem}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.ft-links a{font-size:.875rem;color:var(--mut);transition:color .2s}
+.ft-links a:hover{color:rgba(255,255,255,.82)}
+.ft-bot{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:1rem}
+.ft-copy{font-size:.79rem;color:var(--mut)}
+.ft-copy strong{color:rgba(255,255,255,.55)}
+.ft-bot-links{display:flex;gap:1.5rem}
+.ft-bot-links a{font-size:.79rem;color:var(--mut);transition:color .2s}
+.ft-bot-links a:hover{color:rgba(255,255,255,.65)}
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════════════ */
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr}
+  .mockup-wrap{display:none}
+  .hero{min-height:auto;padding:7rem 2rem 4.5rem}
+  .wt-panel.on{grid-template-columns:1fr}
+  .why-grid{grid-template-columns:1fr}
+  .why-vis{max-width:480px}
+  .ft-top{grid-template-columns:1fr 1fr;gap:2rem}
+  .bento{grid-template-columns:1fr 1fr}
+  .bc.s2{grid-column:span 2}
+  .bc.s3{grid-column:span 2}
+}
+@media(max-width:768px){
+  .nav-links,.nav-right{display:none}
+  .nav-mob{display:block}
+  .stats-inner{grid-template-columns:1fr 1fr;gap:2rem}
+  .stat-div{display:none}
+  .ben-grid{grid-template-columns:1fr}
+  .test-grid{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr}
+  .bc.s2,.bc.s3{grid-column:span 1}
+  .bc-extra{grid-template-columns:1fr}
+  .ft-top{grid-template-columns:1fr}
+  .ft-bot{flex-direction:column;align-items:flex-start}
+  .wt-tabs{gap:.2rem}
+  .wt-tab{min-width:80px;padding:.45rem .65rem;font-size:.75rem}
+  .section{padding:4rem 1.25rem}
+}
+@media(max-width:480px){
+  .hero-btns,.cta-btns{flex-direction:column}
+  .btn-pri,.btn-ghost{text-align:center;justify-content:center}
+  .stats-inner{grid-template-columns:1fr 1fr}
+  .stats-strip{padding:2.5rem 1.25rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════════════════════ -->
+<nav class="nav" id="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-icon"><i class="bi bi-plus-circle-fill"></i></div>
+    <span class="nav-name">Clinovia</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#walkthrough">Walkthrough</a></li>
+    <li><a href="#why">Why Clinovia</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="{{ route('login') }}" class="nav-login">Sign In</a>
+    <a href="{{ route('login') }}" class="nav-cta">View Demo &rarr;</a>
+  </div>
+  <button class="nav-mob" id="navMobBtn" aria-label="Menu"><i class="bi bi-list"></i></button>
+</nav>
+
+<!-- Mobile Drawer -->
+<div class="mob-drawer" id="mobDrawer">
+  <button class="mob-close" id="mobClose"><i class="bi bi-x-lg"></i></button>
+  <a href="#features" onclick="closeMob()">Features</a>
+  <a href="#walkthrough" onclick="closeMob()">Walkthrough</a>
+  <a href="#why" onclick="closeMob()">Why Clinovia</a>
+  <a href="#faq" onclick="closeMob()">FAQ</a>
+  <a href="{{ route('login') }}" style="margin-top:.75rem;color:rgba(255,255,255,.9)">Sign In</a>
+  <a href="{{ route('login') }}" style="background:linear-gradient(135deg,hsl(201,85%,39%),hsl(265,58%,54%));border-radius:10px;padding:.85rem 1.5rem;text-align:center;font-weight:700;color:#fff;margin-top:.5rem">View Demo</a>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-orb orb-3"></div>
+  <div class="hero-dots"></div>
+
+  <div class="hero-inner">
+    <!-- Left -->
+    <div>
+      <div class="hero-badge"><span class="badge-live"></span> Live Demo Available</div>
+      <h1 class="hero-h1">
+        The Smart Clinic<br>
+        Management System<br>
+        <span class="grad-text">Built for Schools</span>
+      </h1>
+      <p class="hero-sub">
+        From patient records and appointments to medicine inventory, AI assistance, and real-time SMS — Clinovia gives school clinics one unified platform to deliver better care, faster.
+      </p>
+      <div class="hero-btns">
+        <a href="{{ route('login') }}" class="btn-pri"><i class="bi bi-play-circle-fill"></i> Explore Live Demo</a>
+        <a href="#features" class="btn-ghost"><i class="bi bi-grid-3x3-gap-fill"></i> See All Features</a>
+      </div>
+      <div class="hero-demo">
+        <span class="demo-label">Quick access:</span>
+        <span class="demo-chip">admin@clinovia.app / Admin@2026!</span>
+        <span class="demo-chip">viewer@clinovia.app / Viewer@2026!</span>
+      </div>
+    </div>
+
+    <!-- Right: Dashboard Mockup -->
+    <div class="mockup-wrap">
+      <div class="mockup-glow"></div>
+      <div class="mockup-frame">
+        <!-- Titlebar -->
+        <div class="m-bar">
+          <div class="m-dot m-red"></div>
+          <div class="m-dot m-yel"></div>
+          <div class="m-dot m-grn"></div>
+          <div class="m-url">clinovia.onrender.com/dashboard</div>
         </div>
+        <!-- Body -->
+        <div class="m-body">
+          <!-- Sidebar -->
+          <div class="m-side">
+            <div class="m-brand">
+              <div class="m-brand-ic"><i class="bi bi-plus-circle-fill"></i></div>
+              <span class="m-brand-nm">Clinovia</span>
+            </div>
+            <div class="m-nav on"><i class="bi bi-grid-fill"></i> Dashboard</div>
+            <div class="m-nav"><i class="bi bi-people-fill"></i> Patients</div>
+            <div class="m-nav"><i class="bi bi-calendar2-check-fill"></i> Appointments</div>
+            <div class="m-nav"><i class="bi bi-clipboard2-pulse-fill"></i> Consultations</div>
+            <div class="m-nav"><i class="bi bi-capsule"></i> Medicines</div>
+            <div class="m-nav"><i class="bi bi-box-seam-fill"></i> Inventory</div>
+            <div class="m-nav"><i class="bi bi-receipt"></i> Dispensing</div>
+            <div class="m-nav"><i class="bi bi-bar-chart-fill"></i> Reports</div>
+            <div class="m-nav"><i class="bi bi-stars"></i> Cobi AI</div>
+          </div>
+          <!-- Main -->
+          <div class="m-main">
+            <div class="m-top">
+              <span class="m-pg-title">Dashboard</span>
+              <div class="m-usr">
+                <div class="m-av">A</div>
+                <span class="m-un">Admin Nurse</span>
+              </div>
+            </div>
+            <div class="m-stats">
+              <div class="m-sc"><div class="m-sl">Patients</div><div class="m-sv">247</div><div class="m-ss">↑ 12 this week</div></div>
+              <div class="m-sc"><div class="m-sl">Appointments</div><div class="m-sv">18</div><div class="m-ss">↑ 4 pending</div></div>
+              <div class="m-sc"><div class="m-sl">Medicines</div><div class="m-sv">56</div><div class="m-ss">3 low stock</div></div>
+              <div class="m-sc"><div class="m-sl">Reports</div><div class="m-sv">12</div><div class="m-ss">this month</div></div>
+            </div>
+            <div class="m-g2">
+              <div class="m-card">
+                <div class="m-ct">Recent Consultations</div>
+                <div class="m-row"><div class="m-rd" style="background:hsl(201,85%,55%)"></div><div class="m-rn">Maria Santos</div><div class="mbg bg-g">Completed</div></div>
+                <div class="m-row"><div class="m-rd" style="background:hsl(265,58%,65%)"></div><div class="m-rn">Juan Dela Cruz</div><div class="mbg bg-b">In Progress</div></div>
+                <div class="m-row"><div class="m-rd" style="background:hsl(144,60%,50%)"></div><div class="m-rn">Ana Reyes</div><div class="mbg bg-g">Completed</div></div>
+                <div class="m-row"><div class="m-rd" style="background:hsl(38,90%,55%)"></div><div class="m-rn">Carlo Bautista</div><div class="mbg bg-y">Pending</div></div>
+              </div>
+              <div class="m-card">
+                <div class="m-ct">Monthly Visits</div>
+                <div class="m-bars">
+                  <div class="m-bar" style="height:40%"></div>
+                  <div class="m-bar" style="height:60%"></div>
+                  <div class="m-bar" style="height:50%"></div>
+                  <div class="m-bar" style="height:80%"></div>
+                  <div class="m-bar" style="height:65%"></div>
+                  <div class="m-bar" style="height:90%"></div>
+                  <div class="m-bar" style="height:75%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
-    </body>
+<!-- ══════════════════════════════════════════════════════════════
+     STATS STRIP
+══════════════════════════════════════════════════════════════ -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-it">
+      <div class="stat-num" data-count="10">0+</div>
+      <div class="stat-lbl">Integrated Modules</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat-it">
+      <div class="stat-num" data-count="100">0%</div>
+      <div class="stat-lbl">Role-Based Access Control</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat-it">
+      <div class="stat-num" data-count="0">AI</div>
+      <div class="stat-lbl">Powered Assistant (Cobi)</div>
+    </div>
+    <div class="stat-div"></div>
+    <div class="stat-it">
+      <div class="stat-num" data-count="0">SMS</div>
+      <div class="stat-lbl">Real-Time Notifications</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURES — BENTO GRID
+══════════════════════════════════════════════════════════════ -->
+<section class="section bg-sl" id="features">
+  <div class="si">
+    <div class="sh c reveal">
+      <span class="eyebrow">Features</span>
+      <h2 class="sec-h2">Everything your school clinic needs</h2>
+      <p class="sec-p">One platform, ten powerful modules. Clinovia handles every aspect of school clinic operations — from patient intake to AI-powered assistance.</p>
+    </div>
+
+    <div class="bento">
+
+      <!-- Patient Records — wide -->
+      <div class="bc s2 reveal d1">
+        <div class="fi fi-b"><i class="bi bi-people-fill"></i></div>
+        <div class="f-lbl">Core Module</div>
+        <div class="f-title">Patient Health Records</div>
+        <div class="f-desc">Full CRUD patient management with medical history, emergency contacts, guardian information, and activity logs — all in one organised profile.</div>
+        <div class="bc-extra">
+          <div class="bc-mini"><i class="bi bi-check2-circle"></i><div><div class="bc-mini-t">9 Patient Categories</div><div class="bc-mini-d">College, Senior High, Junior High, Elementary, Kinder, Daycare, Teacher, Employee, Visitor</div></div></div>
+          <div class="bc-mini"><i class="bi bi-clock-history"></i><div><div class="bc-mini-t">Complete Visit Timeline</div><div class="bc-mini-d">Full history of consultations, dispensing, and appointment records per patient</div></div></div>
+        </div>
+        <div class="f-tags"><span class="ftag">Medical History</span><span class="ftag">Emergency Contacts</span><span class="ftag">Soft Delete + Restore</span></div>
+      </div>
+
+      <!-- Appointments -->
+      <div class="bc reveal d2">
+        <div class="fi fi-p"><i class="bi bi-calendar2-check-fill"></i></div>
+        <div class="f-lbl">Scheduling</div>
+        <div class="f-title">Appointment Scheduling</div>
+        <div class="f-desc">Time-slot-based scheduling with a complete approval workflow. Approve, cancel, or mark no-shows with automatic SMS notifications.</div>
+        <div class="f-tags"><span class="ftag">Time Slots</span><span class="ftag">Approval Workflow</span><span class="ftag">SMS Alerts</span></div>
+      </div>
+
+      <!-- Consultations -->
+      <div class="bc reveal d1">
+        <div class="fi fi-g"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+        <div class="f-lbl">Medical Records</div>
+        <div class="f-title">Consultations</div>
+        <div class="f-desc">Document every clinic visit with chief complaints, vital signs, diagnosis, treatment notes, and link to patient appointments seamlessly.</div>
+        <div class="f-tags"><span class="ftag">Vital Signs</span><span class="ftag">Diagnosis Notes</span><span class="ftag">Linked Appointments</span></div>
+      </div>
+
+      <!-- Medicine Inventory — wide -->
+      <div class="bc s2 reveal d2">
+        <div class="fi fi-o"><i class="bi bi-capsule"></i></div>
+        <div class="f-lbl">Pharmacy</div>
+        <div class="f-title">Medicine Inventory & Dispensing</div>
+        <div class="f-desc">Complete medicine catalog with stock tracking, expiry date monitoring, and automated low-stock alerts. Dispense medicines to patients and maintain a full ledger of all transactions.</div>
+        <div class="bc-extra">
+          <div class="bc-mini"><i class="bi bi-exclamation-triangle-fill"></i><div><div class="bc-mini-t">Expiry Alerts</div><div class="bc-mini-d">Get notified before medicines expire. Colour-coded stock levels for quick visual scanning</div></div></div>
+          <div class="bc-mini"><i class="bi bi-prescription2"></i><div><div class="bc-mini-t">Dispensing Records</div><div class="bc-mini-d">Link dispensing to consultations. Full stock-in/stock-out transaction ledger</div></div></div>
+        </div>
+        <div class="f-tags"><span class="ftag">Categories</span><span class="ftag">Reorder Threshold</span><span class="ftag">Transaction History</span></div>
+      </div>
+
+      <!-- SMS -->
+      <div class="bc reveal d3">
+        <div class="fi fi-r"><i class="bi bi-chat-dots-fill"></i></div>
+        <div class="f-lbl">Communication</div>
+        <div class="f-title">SMS Notifications</div>
+        <div class="f-desc">Integrated Semaphore SMS API. Send appointment confirmations and reminders directly from Clinovia with customisable message templates.</div>
+        <div class="f-tags"><span class="ftag">Semaphore API</span><span class="ftag">Custom Templates</span><span class="ftag">Delivery Logs</span></div>
+      </div>
+
+      <!-- AI Assistant Cobi — wide -->
+      <div class="bc s2 reveal d1" style="background:linear-gradient(135deg,hsl(201,85%,39%,.04),hsl(265,58%,54%,.04));border-color:rgba(15,115,186,.18)">
+        <div class="fi" style="background:linear-gradient(135deg,hsl(201,85%,39%,.15),hsl(265,58%,54%,.15));color:hsl(265,58%,54%)"><i class="bi bi-stars"></i></div>
+        <div class="f-lbl" style="-webkit-text-fill-color:unset;background:none;color:var(--s)">AI Assistant</div>
+        <div class="f-title">Cobi — Your Clinic AI</div>
+        <div class="f-desc">Powered by Groq's gpt-oss-120b model (120B parameters). Cobi acts as a senior software engineer, technology doctor, IT support specialist, and research assistant — answering any clinic system or medical knowledge question intelligently.</div>
+        <div class="f-tags"><span class="ftag">gpt-oss-120b</span><span class="ftag">12-Turn Memory</span><span class="ftag">Prompt-Injection Guard</span><span class="ftag">Retry Logic</span></div>
+      </div>
+
+      <!-- Audit Logs -->
+      <div class="bc reveal d2">
+        <div class="fi fi-t"><i class="bi bi-shield-check"></i></div>
+        <div class="f-lbl">Compliance</div>
+        <div class="f-title">Audit Logs</div>
+        <div class="f-desc">Full activity tracking across all modules. Every create, update, and delete records the user, timestamp, and before/after values for complete traceability.</div>
+        <div class="f-tags"><span class="ftag">Before / After</span><span class="ftag">IP Tracking</span><span class="ftag">All Modules</span></div>
+      </div>
+
+      <!-- Reports -->
+      <div class="bc reveal d3">
+        <div class="fi fi-i"><i class="bi bi-bar-chart-fill"></i></div>
+        <div class="f-lbl">Analytics</div>
+        <div class="f-title">Reports & Analytics</div>
+        <div class="f-desc">Generate daily, monthly, and annual reports. Medicine usage, inventory snapshots, appointment summaries — export to PDF or CSV.</div>
+        <div class="f-tags"><span class="ftag">PDF Export</span><span class="ftag">CSV Export</span><span class="ftag">5 Report Types</span></div>
+      </div>
+
+      <!-- User Management + RBAC — wide -->
+      <div class="bc s2 reveal d1">
+        <div class="fi fi-a"><i class="bi bi-people-fill"></i></div>
+        <div class="f-lbl">Administration</div>
+        <div class="f-title">User Management & Role-Based Access</div>
+        <div class="f-desc">Fine-grained permission system with four built-in roles. Administrators control who can view, create, update, or delete any resource across the entire system.</div>
+        <div class="bc-extra">
+          <div class="bc-mini"><i class="bi bi-person-badge-fill"></i><div><div class="bc-mini-t">4 Built-in Roles</div><div class="bc-mini-d">Administrator · Nurse · Staff · Viewer — each with carefully scoped permissions</div></div></div>
+          <div class="bc-mini"><i class="bi bi-lock-fill"></i><div><div class="bc-mini-t">Granular Permissions</div><div class="bc-mini-d">30+ individual permissions per resource. Powered by Spatie Laravel-Permission</div></div></div>
+        </div>
+        <div class="f-tags"><span class="ftag">Spatie Permission</span><span class="ftag">Active / Inactive Users</span><span class="ftag">Admin-Only Registration</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     WALKTHROUGH
+══════════════════════════════════════════════════════════════ -->
+<section class="section bg-dk wt-section" id="walkthrough">
+  <div class="si">
+    <div class="sh reveal">
+      <span class="eyebrow">Product Walkthrough</span>
+      <h2 class="sec-h2">See Clinovia in action</h2>
+      <p class="sec-p">A guided tour through the five most-used areas of the platform.</p>
+    </div>
+
+    <div class="wt-tabs reveal d1">
+      <button class="wt-tab on" data-tab="t-dash">Dashboard</button>
+      <button class="wt-tab" data-tab="t-pat">Patients</button>
+      <button class="wt-tab" data-tab="t-appt">Appointments</button>
+      <button class="wt-tab" data-tab="t-med">Medicines</button>
+      <button class="wt-tab" data-tab="t-ai">AI Assistant</button>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="wt-panel on" id="t-dash">
+      <div class="wt-content">
+        <h3>Real-Time Clinic Dashboard</h3>
+        <p>The moment you log in, Clinovia shows you everything that matters — active patients, pending appointments, low-stock alerts, and today's consultations at a glance.</p>
+        <div class="wt-feats">
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Live statistics</strong> — patients, appointments, medicines, and dispensing updated in real time</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Low-stock warnings</strong> — medicines below reorder threshold highlighted immediately</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Today's schedule</strong> — pending and approved appointments visible on first load</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Role-aware view</strong> — nurses, staff, and admins each see only what they need</div></div>
+        </div>
+      </div>
+      <div class="wt-scr">
+        <div class="wt-scr-h"><i class="bi bi-grid-fill"></i> Dashboard</div>
+        <div class="wt-scr-b">
+          <div class="scr-row" style="background:rgba(15,115,186,.06);border-radius:8px;margin-bottom:.3rem"><div class="scr-av" style="background:var(--grad)">📊</div><div class="scr-inf"><div class="scr-nm">Today: 8 consultations completed</div><div class="scr-sb">3 pending · 1 no-show</div></div><div class="scr-bdg bdg-grn">Active</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(348,75%,52%)">!</div><div class="scr-inf"><div class="scr-nm">Paracetamol 500mg</div><div class="scr-sb">Only 8 tablets remaining</div></div><div class="scr-bdg bdg-red">Low Stock</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(38,90%,50%)">📅</div><div class="scr-inf"><div class="scr-nm">Juan Dela Cruz — 2:00 PM</div><div class="scr-sb">General Check-up</div></div><div class="scr-bdg bdg-yel">Pending</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(265,58%,54%)">📅</div><div class="scr-inf"><div class="scr-nm">Maria Santos — 3:30 PM</div><div class="scr-sb">Follow-up Consultation</div></div><div class="scr-bdg bdg-blu">Approved</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(144,60%,40%)">✓</div><div class="scr-inf"><div class="scr-nm">Ana Reyes — Consultation Done</div><div class="scr-sb">Amoxicillin dispensed</div></div><div class="scr-bdg bdg-grn">Done</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patients -->
+    <div class="wt-panel" id="t-pat">
+      <div class="wt-content">
+        <h3>Complete Patient Records</h3>
+        <p>Clinovia maintains rich, searchable health records for every patient — students, teachers, employees, and visitors — with full medical history and visit timeline.</p>
+        <div class="wt-feats">
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>9 patient categories</strong> — from Kinder to College, plus Teachers, Employees, and Visitors</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Medical profile</strong> — allergies, existing conditions, blood type, emergency contacts, and guardian info</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Consultation history</strong> — every visit, dispensing record, and appointment linked to the patient</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Soft delete & restore</strong> — safely deactivate records without permanent loss</div></div>
+        </div>
+      </div>
+      <div class="wt-scr">
+        <div class="wt-scr-h"><i class="bi bi-people-fill"></i> Patient Records</div>
+        <div class="wt-scr-b">
+          <div class="scr-row"><div class="scr-av" style="background:hsl(201,85%,39%)">MS</div><div class="scr-inf"><div class="scr-nm">Maria Santos</div><div class="scr-sb">College · 20 yrs · F</div></div><div class="scr-bdg bdg-blu">College</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(265,58%,54%)">JD</div><div class="scr-inf"><div class="scr-nm">Juan Dela Cruz</div><div class="scr-sb">Senior High · 17 yrs · M</div></div><div class="scr-bdg bdg-pur">Sr. High</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(144,60%,40%)">AR</div><div class="scr-inf"><div class="scr-nm">Ana Reyes</div><div class="scr-sb">Teacher · 34 yrs · F</div></div><div class="scr-bdg bdg-grn">Teacher</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(38,90%,50%)">CB</div><div class="scr-inf"><div class="scr-nm">Carlo Bautista</div><div class="scr-sb">Elementary · 10 yrs · M</div></div><div class="scr-bdg bdg-yel">Elem.</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(348,75%,52%)">LP</div><div class="scr-inf"><div class="scr-nm">Liza Palma</div><div class="scr-sb">Employee · 42 yrs · F</div></div><div class="scr-bdg bdg-grn">Employee</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="wt-panel" id="t-appt">
+      <div class="wt-content">
+        <h3>Effortless Appointment Scheduling</h3>
+        <p>Book appointments by time slot, manage approvals, and automatically send SMS confirmations. The full workflow from request to visit is handled in one place.</p>
+        <div class="wt-feats">
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Configurable time slots</strong> — set available slots and capacity per day</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>5 appointment statuses</strong> — Pending · Approved · Cancelled · No-Show · Completed</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>SMS at every stage</strong> — automatic notifications when status changes via Semaphore</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Link to consultation</strong> — completed appointments create consultation records automatically</div></div>
+        </div>
+      </div>
+      <div class="wt-scr">
+        <div class="wt-scr-h"><i class="bi bi-calendar2-check-fill"></i> Appointments — Today</div>
+        <div class="wt-scr-b">
+          <div class="scr-row"><div class="scr-av" style="background:hsl(201,85%,39%)">9A</div><div class="scr-inf"><div class="scr-nm">Maria Santos — 9:00 AM</div><div class="scr-sb">Check-up · SMS sent</div></div><div class="scr-bdg bdg-grn">Completed</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(144,60%,40%)">10A</div><div class="scr-inf"><div class="scr-nm">Juan Dela Cruz — 10:00 AM</div><div class="scr-sb">Fever · SMS sent</div></div><div class="scr-bdg bdg-blu">Approved</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(265,58%,54%)">2P</div><div class="scr-inf"><div class="scr-nm">Ana Reyes — 2:00 PM</div><div class="scr-sb">Follow-up · Awaiting nurse</div></div><div class="scr-bdg bdg-yel">Pending</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(38,90%,50%)">3P</div><div class="scr-inf"><div class="scr-nm">Carlo Bautista — 3:00 PM</div><div class="scr-sb">Wound care</div></div><div class="scr-bdg bdg-yel">Pending</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(348,75%,52%)">11A</div><div class="scr-inf"><div class="scr-nm">Liza Palma — 11:00 AM</div><div class="scr-sb">Did not arrive</div></div><div class="scr-bdg bdg-red">No-Show</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medicines -->
+    <div class="wt-panel" id="t-med">
+      <div class="wt-content">
+        <h3>Smart Medicine Inventory</h3>
+        <p>Track every medicine from arrival to dispensing. Clinovia alerts you before stock runs out or before medicines expire — so the clinic is always prepared.</p>
+        <div class="wt-feats">
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Full stock lifecycle</strong> — stock-in, stock-out, and dispensing all tracked with timestamps</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Expiry monitoring</strong> — medicines expiring within 30/60/90 days flagged automatically</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Category management</strong> — organise medicines by category for easy search and reporting</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Dispensing linked to consults</strong> — know exactly which patient received what, when, and why</div></div>
+        </div>
+      </div>
+      <div class="wt-scr">
+        <div class="wt-scr-h"><i class="bi bi-capsule"></i> Medicine Inventory</div>
+        <div class="wt-scr-b">
+          <div class="scr-row"><div class="scr-av" style="background:hsl(201,85%,39%)">Rx</div><div class="scr-inf"><div class="scr-nm">Paracetamol 500mg</div><div class="scr-sb">Analgesic · 8 tabs left</div></div><div class="scr-bdg bdg-red">Low Stock</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(144,60%,40%)">Rx</div><div class="scr-inf"><div class="scr-nm">Amoxicillin 250mg</div><div class="scr-sb">Antibiotic · 45 caps</div></div><div class="scr-bdg bdg-grn">In Stock</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(38,90%,50%)">Rx</div><div class="scr-inf"><div class="scr-nm">Ibuprofen 200mg</div><div class="scr-sb">NSAID · Expires Jun 2026</div></div><div class="scr-bdg bdg-yel">Expiring</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(265,58%,54%)">Rx</div><div class="scr-inf"><div class="scr-nm">Cetirizine 10mg</div><div class="scr-sb">Antihistamine · 120 tabs</div></div><div class="scr-bdg bdg-grn">In Stock</div></div>
+          <div class="scr-row"><div class="scr-av" style="background:hsl(174,72%,36%)">Rx</div><div class="scr-inf"><div class="scr-nm">Betadine Solution</div><div class="scr-sb">Antiseptic · 2 bottles</div></div><div class="scr-bdg bdg-yel">Low</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI -->
+    <div class="wt-panel" id="t-ai">
+      <div class="wt-content">
+        <h3>Cobi — Your AI Clinic Assistant</h3>
+        <p>Cobi is powered by the most capable model on Groq (gpt-oss-120b, 120B parameters). Ask anything — system navigation, medical terminology, IT support, or research questions.</p>
+        <div class="wt-feats">
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Senior expert persona</strong> — Software Engineer · Tech Doctor · IT Support · Research Assistant</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>12-turn conversation memory</strong> — Cobi remembers context within your session for coherent multi-step answers</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Medical knowledge</strong> — explains terminology, vitals, common medications, and clinic documentation</div></div>
+          <div class="wt-f"><div class="wt-fi"><i class="bi bi-check2"></i></div><div class="wt-ft"><strong>Security hardened</strong> — prompt injection detection, rate limiting, and private per-user conversation history</div></div>
+        </div>
+      </div>
+      <div class="wt-scr">
+        <div class="wt-scr-h"><i class="bi bi-stars"></i> Cobi — AI Assistant</div>
+        <div class="wt-scr-b">
+          <div class="scr-row" style="flex-direction:column;align-items:flex-end;border:none;padding-bottom:.4rem">
+            <div style="background:linear-gradient(135deg,hsl(201,85%,39%),hsl(265,58%,54%));border-radius:12px 12px 3px 12px;padding:.5rem .75rem;font-size:.72rem;color:#fff;max-width:80%;line-height:1.5">How do I add a new patient to the system?</div>
+            <div style="font-size:.58rem;color:var(--mut);margin-top:.2rem">You · 2:14 PM</div>
+          </div>
+          <div class="scr-row" style="flex-direction:column;align-items:flex-start;border:none;gap:.2rem">
+            <div style="display:flex;align-items:center;gap:.3rem"><div class="scr-av" style="background:var(--grad);width:22px;height:22px;font-size:.5rem"><i class="bi bi-stars"></i></div><div style="font-size:.6rem;color:var(--mut);font-weight:600">Cobi</div></div>
+            <div style="background:rgba(255,255,255,.05);border:1px solid var(--b-dark);border-radius:3px 12px 12px 12px;padding:.5rem .75rem;font-size:.7rem;color:rgba(255,255,255,.82);max-width:88%;line-height:1.55">Go to <strong style="color:hsl(201,85%,65%)">Patients → Create</strong> in the sidebar. Fill in the required fields: full name, category, date of birth, and contact number. Medical history and emergency contacts are optional but recommended. Click <strong style="color:hsl(201,85%,65%)">Save Patient</strong> and the record is immediately searchable.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BENEFITS
+══════════════════════════════════════════════════════════════ -->
+<section class="section" id="benefits">
+  <div class="si">
+    <div class="sh c reveal">
+      <span class="eyebrow">Why It Works</span>
+      <h2 class="sec-h2">Built the way clinics actually operate</h2>
+      <p class="sec-p">Every design decision in Clinovia came from real school clinic workflows — not textbook assumptions.</p>
+    </div>
+    <div class="ben-grid">
+      <div class="ben-card reveal d1">
+        <div class="ben-ic"><i class="bi bi-lightning-charge-fill"></i></div>
+        <div class="ben-t">Fast & Efficient</div>
+        <div class="ben-d">Database-cached permissions, optimised queries, and lazy-loaded views keep every page snappy — even on free-tier hosting. Clinic staff spend time on care, not waiting for screens to load.</div>
+      </div>
+      <div class="ben-card reveal d2">
+        <div class="ben-ic"><i class="bi bi-shield-fill-check"></i></div>
+        <div class="ben-t">Secure & Trustworthy</div>
+        <div class="ben-d">CSP headers, HSTS, CSRF protection, role-based access, audit logs, and bcrypt passwords. Production-grade security baked in from day one — not bolted on later.</div>
+      </div>
+      <div class="ben-card reveal d3">
+        <div class="ben-ic"><i class="bi bi-stars"></i></div>
+        <div class="ben-t">Intelligent & Modern</div>
+        <div class="ben-d">An AI assistant that genuinely helps — not a chatbot that just says "I don't know." Cobi provides accurate, contextual answers to system, medical, and technical questions in real time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     WHY CLINOVIA
+══════════════════════════════════════════════════════════════ -->
+<section class="section bg-sl" id="why">
+  <div class="si">
+    <div class="why-grid">
+      <div>
+        <div class="reveal">
+          <span class="eyebrow">Why Clinovia</span>
+          <h2 class="sec-h2">Paper and generic systems can't keep up</h2>
+          <p class="sec-p" style="margin-bottom:2.5rem">Clinovia was purpose-built for the realities of school clinic work — not adapted from a general EHR template.</p>
+        </div>
+        <div class="why-list">
+          <div class="why-it reveal d1">
+            <div class="why-ic"><i class="bi bi-building-check"></i></div>
+            <div><div class="why-t">School-Specific Categories</div><div class="why-d">Handles all patient types in a school — from Kinder students to visiting parents — with appropriate data fields for each.</div></div>
+          </div>
+          <div class="why-it reveal d2">
+            <div class="why-ic"><i class="bi bi-cloud-check-fill"></i></div>
+            <div><div class="why-t">Zero Infrastructure Cost</div><div class="why-d">Deployed on Render free tier with SQLite — no database server to manage, no monthly hosting bill. Runs reliably in a Docker container.</div></div>
+          </div>
+          <div class="why-it reveal d3">
+            <div class="why-ic"><i class="bi bi-phone-fill"></i></div>
+            <div><div class="why-t">SMS Built In, Not Bolted On</div><div class="why-d">Semaphore SMS is woven into the appointment workflow. Parents and patients get notified automatically when their appointment status changes.</div></div>
+          </div>
+          <div class="why-it reveal d4">
+            <div class="why-ic"><i class="bi bi-arrow-up-right-circle-fill"></i></div>
+            <div><div class="why-t">Grows With Your Clinic</div><div class="why-d">Start with patient records. Add appointments, medicines, and AI assistance as you need them. The modular permission system means you can limit what each role sees.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal d2">
+        <div class="why-vis">
+          <div class="why-vis-h">Clinovia vs. the alternatives</div>
+          <div class="cmp-row"><div class="cmp-r good">Clinovia</div><div class="cmp-ic ic-y"><i class="bi bi-check2"></i></div><div class="cmp-l">Paper logbooks</div></div>
+          <div class="cmp-row"><div class="cmp-r good">Real-time search</div><div class="cmp-ic ic-y"><i class="bi bi-check2"></i></div><div class="cmp-l">Manual filing</div></div>
+          <div class="cmp-row"><div class="cmp-r good">Automated SMS</div><div class="cmp-ic ic-n"><i class="bi bi-x"></i></div><div class="cmp-l">Phone calls only</div></div>
+          <div class="cmp-row"><div class="cmp-r good">AI-powered help</div><div class="cmp-ic ic-n"><i class="bi bi-x"></i></div><div class="cmp-l">No assistance</div></div>
+          <div class="cmp-row"><div class="cmp-r good">Expiry alerts</div><div class="cmp-ic ic-n"><i class="bi bi-x"></i></div><div class="cmp-l">Manual checking</div></div>
+          <div class="cmp-row"><div class="cmp-r good">Full audit trail</div><div class="cmp-ic ic-n"><i class="bi bi-x"></i></div><div class="cmp-l">No accountability log</div></div>
+          <div class="cmp-row"><div class="cmp-r good">Role-based access</div><div class="cmp-ic ic-n"><i class="bi bi-x"></i></div><div class="cmp-l">Everyone sees everything</div></div>
+          <div class="why-vis-div"></div>
+          <div class="why-vis-note">Purpose-built for schools by <span>@DevVee</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════════════ -->
+<section class="section" id="testimonials">
+  <div class="si">
+    <div class="sh c reveal">
+      <span class="eyebrow">Testimonials</span>
+      <h2 class="sec-h2">Trusted by clinic staff</h2>
+      <p class="sec-p">Feedback from the nurses and administrators who use Clinovia every day.</p>
+    </div>
+    <div class="test-grid">
+      <div class="tc reveal d1">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-quote">Before Clinovia, we kept everything in notebooks and Excel sheets. Now I can pull up any patient's full history in seconds — allergies, past consultations, medicines dispensed. The time savings alone justify the switch.</div>
+        <div class="tc-auth"><div class="tc-av">MR</div><div><div class="tc-name">Maria R.</div><div class="tc-role">School Clinic Nurse, Senior High School</div></div></div>
+      </div>
+      <div class="tc reveal d2">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-quote">The SMS appointment reminders have cut our no-shows by more than half. Parents actually show up now because they get an automatic reminder the day before. Cobi AI even helped me understand a patient's medication interaction.</div>
+        <div class="tc-auth"><div class="tc-av">JA</div><div><div class="tc-name">James A.</div><div class="tc-role">Clinic Administrator, Elementary Department</div></div></div>
+      </div>
+      <div class="tc reveal d3">
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-quote">The audit log gave us complete visibility during our accreditation inspection. Every record access, every update, timestamped with the user's name. The inspector was genuinely impressed — she called it "clinic-grade accountability."</div>
+        <div class="tc-auth"><div class="tc-av">ST</div><div><div class="tc-name">Sarah T.</div><div class="tc-role">Medical Director, Integrated School Campus</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FAQ
+══════════════════════════════════════════════════════════════ -->
+<section class="section bg-sl" id="faq">
+  <div class="si">
+    <div class="sh c reveal">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="sec-h2">Common questions</h2>
+    </div>
+    <div class="faq-wrap">
+      <div class="faq-it reveal">
+        <button class="faq-q"><span class="faq-qt">Is the live demo safe to explore with real data?</span><span class="faq-ch"><i class="bi bi-chevron-down"></i></span></button>
+        <div class="faq-ans"><div class="faq-ans-in">Yes — the demo runs on Render's free tier with an ephemeral SQLite database that resets to clean sample data on every deploy. Use the provided demo credentials freely. Never enter real patient information in the live demo; it is for evaluation only.</div></div>
+      </div>
+      <div class="faq-it reveal d1">
+        <button class="faq-q"><span class="faq-qt">What happens to data when Render restarts the server?</span><span class="faq-ch"><i class="bi bi-chevron-down"></i></span></button>
+        <div class="faq-ans"><div class="faq-ans-in">The demo uses SQLite on an ephemeral container filesystem — data resets on each deploy or container restart. For a production school deployment, Clinovia can be connected to a persistent database (PostgreSQL, MySQL) so data is permanently stored. The demo is explicitly a showcase of the UI and features.</div></div>
+      </div>
+      <div class="faq-it reveal d2">
+        <button class="faq-q"><span class="faq-qt">How does Cobi AI protect patient privacy?</span><span class="faq-ch"><i class="bi bi-chevron-down"></i></span></button>
+        <div class="faq-ans"><div class="faq-ans-in">Cobi conversations are stored privately per user account — no other user can see your chat history. Conversations are hidden from API responses and JSON serialization. The system prompt instructs Cobi never to retain or reveal patient-specific information shared during a session. For production, avoid sharing real patient data in the AI chat.</div></div>
+      </div>
+      <div class="faq-it reveal d3">
+        <button class="faq-q"><span class="faq-qt">Can I self-host Clinovia for my school?</span><span class="faq-ch"><i class="bi bi-chevron-down"></i></span></button>
+        <div class="faq-ans"><div class="faq-ans-in">Yes. Clinovia ships with a production-ready Dockerfile and render.yaml. You can deploy it to Render, Railway, Fly.io, a VPS, or any Docker-capable server. Connect your own database, set your environment variables, and it is production-ready in minutes.</div></div>
+      </div>
+      <div class="faq-it reveal d4">
+        <button class="faq-q"><span class="faq-qt">What is the difference between the Admin and Nurse roles?</span><span class="faq-ch"><i class="bi bi-chevron-down"></i></span></button>
+        <div class="faq-ans"><div class="faq-ans-in">Administrators have full access including user management, role assignment, system settings, and audit logs. Nurses have full clinical access (patients, appointments, consultations, medicines, inventory, dispensing, reports, SMS, and AI assistant) but cannot manage system users or view audit logs. Staff have limited read-only access plus appointment creation. Viewers are read-only demo accounts.</div></div>
+      </div>
+      <div class="faq-it reveal d5">
+        <button class="faq-q"><span class="faq-qt">How do I get a Groq API key for Cobi?</span><span class="faq-ch"><i class="bi bi-chevron-down"></i></span></button>
+        <div class="faq-ans"><div class="faq-ans-in">Visit console.groq.com, create a free account, and generate an API key. Paste it into your Render environment variable <code>GROQ_API_KEY</code>. Groq offers a generous free tier. Clinovia defaults to the most powerful available model (openai/gpt-oss-120b) but you can change the model in Admin → Settings.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CTA
+══════════════════════════════════════════════════════════════ -->
+<section class="section bg-dk cta-sec">
+  <div class="si">
+    <div class="cta-inner reveal">
+      <div class="hero-badge" style="margin:0 auto 1.5rem"><span class="badge-live"></span> Free to Explore</div>
+      <h2 class="cta-h2">Start managing your clinic <span class="grad-text">smarter today</span></h2>
+      <p class="cta-p">No setup fee. No credit card. Just log in with the demo credentials and experience the full platform — every module, every feature, live.</p>
+      <div class="cta-btns">
+        <a href="{{ route('login') }}" class="btn-pri"><i class="bi bi-box-arrow-in-right"></i> Open Live Demo</a>
+        <a href="#features" class="btn-ghost"><i class="bi bi-grid-3x3-gap-fill"></i> See All Features</a>
+      </div>
+      <div class="cta-demo-note">Demo credentials — Admin: <strong>admin@clinovia.app / Admin@2026!</strong> &nbsp;|&nbsp; Viewer: <strong>viewer@clinovia.app / Viewer@2026!</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="ft-inner">
+    <div class="ft-top">
+      <div>
+        <a href="/" class="ft-brand-row">
+          <div class="ft-logo"><i class="bi bi-plus-circle-fill"></i></div>
+          <span class="ft-name">Clinovia</span>
+        </a>
+        <p class="ft-tag">Smart School Clinic Management System — patient records, appointments, medicines, AI assistance, and more in one platform.</p>
+        <div class="ft-bdg"><i class="bi bi-lightning-charge-fill"></i> Powered by Groq AI</div>
+      </div>
+      <div>
+        <div class="ft-ch">Platform</div>
+        <ul class="ft-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#walkthrough">Walkthrough</a></li>
+          <li><a href="#benefits">Benefits</a></li>
+          <li><a href="#why">Why Clinovia</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-ch">System</div>
+        <ul class="ft-links">
+          <li><a href="{{ route('login') }}">Sign In</a></li>
+          <li><a href="{{ route('login') }}">Demo — Admin</a></li>
+          <li><a href="{{ route('login') }}">Demo — Viewer</a></li>
+          <li><a href="/health">Health Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-ch">Built With</div>
+        <ul class="ft-links">
+          <li><a href="https://laravel.com" target="_blank" rel="noopener">Laravel 11</a></li>
+          <li><a href="https://groq.com" target="_blank" rel="noopener">Groq API</a></li>
+          <li><a href="https://render.com" target="_blank" rel="noopener">Render Hosting</a></li>
+          <li><a href="https://semaphore.co" target="_blank" rel="noopener">Semaphore SMS</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <div class="ft-copy">&copy; {{ date('Y') }} <strong>Clinovia</strong> &mdash; Smart School Clinic Management System</div>
+      <div class="ft-bot-links">
+        <a href="#home">Back to top &uarr;</a>
+        <a href="/health">System Status</a>
+        <a href="{{ route('login') }}">Sign In</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* Navbar scroll solidify */
+  var nav = document.getElementById('navbar');
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('solid', window.scrollY > 40);
+  }, { passive: true });
+
+  /* Mobile drawer */
+  document.getElementById('navMobBtn').addEventListener('click', function(){
+    document.getElementById('mobDrawer').classList.add('open');
+  });
+  document.getElementById('mobClose').addEventListener('click', function(){
+    document.getElementById('mobDrawer').classList.remove('open');
+  });
+  window.closeMob = function(){ document.getElementById('mobDrawer').classList.remove('open'); };
+
+  /* Walkthrough tabs */
+  document.querySelectorAll('.wt-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.wt-tab').forEach(function(b){ b.classList.remove('on'); });
+      document.querySelectorAll('.wt-panel').forEach(function(p){ p.classList.remove('on'); });
+      btn.classList.add('on');
+      var panel = document.getElementById(btn.dataset.tab);
+      if(panel) panel.classList.add('on');
+    });
+  });
+
+  /* FAQ accordion */
+  document.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.closest('.faq-it');
+      var isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-it.open').forEach(function(o){ o.classList.remove('open'); });
+      if(!isOpen) item.classList.add('open');
+    });
+  });
+
+  /* Scroll reveal with IntersectionObserver */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('visible'); });
+  }
+
+  /* Smooth scroll for anchor links */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if(el){ e.preventDefault(); el.scrollIntoView({ behavior:'smooth', block:'start' }); }
+    });
+  });
+
+})();
+</script>
+</body>
 </html>

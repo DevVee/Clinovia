@@ -82,7 +82,13 @@ Route::get('/health', function () {
 })->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class]);
 
 // ─── Public: redirect to login ────────────────────────────────────────────────
-Route::get('/', fn () => redirect()->route('login'));
+// Landing page for guests; authenticated users go straight to dashboard
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return view('welcome');
+});
 
 // ─── Authenticated Routes ─────────────────────────────────────────────────────
 Route::middleware(['auth', 'check.active'])->group(function () {
