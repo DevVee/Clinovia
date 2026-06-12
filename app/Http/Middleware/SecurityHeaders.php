@@ -57,7 +57,7 @@ class SecurityHeaders
             "img-src 'self' data: blob:",
             "font-src 'self' https://fonts.gstatic.com",
             "connect-src 'self'",
-            "form-action 'self'",
+            "form-action 'self' https:",
             "base-uri 'self'",
             "frame-ancestors 'none'",
             "object-src 'none'",

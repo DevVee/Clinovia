@@ -22,6 +22,13 @@ export APP_URL
 ASSET_URL="${APP_URL}"
 export ASSET_URL
 
+# Default SESSION_DRIVER to 'file' — this project has no create_sessions_table
+# migration, so the 'database' driver breaks CSRF and makes every login silently
+# fail (POST → 419 → redirect to login with no error shown).
+# This fallback fires even if the Render env var is unset or wrong.
+SESSION_DRIVER="${SESSION_DRIVER:-file}"
+export SESSION_DRIVER
+
 # Ensure cookies are only sent over HTTPS when running on Render
 if [ -n "$RENDER_EXTERNAL_URL" ]; then
     SESSION_SECURE_COOKIE=true
