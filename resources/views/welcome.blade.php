@@ -399,7 +399,7 @@ footer{background:var(--dark-2);border-top:1px solid var(--b-dark);padding:4.5re
 ══════════════════════════════════════════════════════════════ -->
 <nav class="nav" id="navbar">
   <a href="/" class="nav-brand">
-    <div class="nav-icon"><i class="bi bi-plus-circle-fill"></i></div>
+    <div class="nav-icon"><img src="/clinovia-icon.svg" alt="Clinovia" width="22" height="22" style="display:block;border-radius:5px"></div>
     <span class="nav-name">Clinovia</span>
   </a>
   <ul class="nav-links">
@@ -474,7 +474,7 @@ footer{background:var(--dark-2);border-top:1px solid var(--b-dark);padding:4.5re
           <!-- Sidebar -->
           <div class="m-side">
             <div class="m-brand">
-              <div class="m-brand-ic"><i class="bi bi-plus-circle-fill"></i></div>
+              <div class="m-brand-ic"><img src="/clinovia-icon.svg" alt="" width="14" height="14" style="display:block;border-radius:3px"></div>
               <span class="m-brand-nm">Clinovia</span>
             </div>
             <div class="m-nav on"><i class="bi bi-grid-fill"></i> Dashboard</div>
@@ -954,7 +954,7 @@ footer{background:var(--dark-2);border-top:1px solid var(--b-dark);padding:4.5re
     <div class="ft-top">
       <div>
         <a href="/" class="ft-brand-row">
-          <div class="ft-logo"><i class="bi bi-plus-circle-fill"></i></div>
+          <div class="ft-logo"><img src="/clinovia-icon.svg" alt="Clinovia" width="22" height="22" style="display:block;border-radius:6px"></div>
           <span class="ft-name">Clinovia</span>
         </a>
         <p class="ft-tag">Smart School Clinic Management System — patient records, appointments, medicines, AI assistance, and more in one platform.</p>

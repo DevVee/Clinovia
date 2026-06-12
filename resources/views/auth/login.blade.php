@@ -8,7 +8,7 @@
 
         {{-- Logo row --}}
         <div class="apb-top">
-            <div class="apb-logo"><i class="bi bi-plus-circle-fill"></i></div>
+            <div class="apb-logo"><img src="/clinovia-icon.svg" alt="Clinovia" width="22" height="22" style="display:block;border-radius:6px"></div>
             <span class="apb-wordmark">Clinovia</span>
         </div>
 
@@ -82,7 +82,7 @@
             {{-- Mobile-only header --}}
             <div class="auth-mobile-header">
                 <div class="auth-logo mb-3">
-                    <i class="bi bi-heart-pulse-fill"></i>
+                    <img src="/clinovia-icon.svg" alt="Clinovia" width="48" height="48" style="border-radius:12px">
                 </div>
                 <h5 class="fw-bold mb-0">Clinovia</h5>
                 <p class="text-muted small">Smart School Clinic Management System</p>
