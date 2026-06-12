@@ -5,65 +5,72 @@
          LEFT — Brand Panel
     ══════════════════════════════════════════════════════ --}}
     <div class="auth-panel-brand">
-        <div class="auth-brand-deco auth-brand-deco--sm"></div>
-        <div class="auth-brand-deco auth-brand-deco--md"></div>
 
-        <div class="auth-brand-inner">
-
-            {{-- Emblem --}}
-            <div class="auth-brand-emblem">
-                <img src="/clinovia-icon.svg" alt="Clinovia" style="width:54px;height:54px;display:block;">
-            </div>
-
-            {{-- Name & tagline --}}
-            <div class="auth-brand-name">Clinovia</div>
-            <p class="auth-brand-tagline">Smart School Clinic Management System</p>
-
-            {{-- Feature highlights --}}
-            <div class="auth-features">
-                <div class="auth-feature-item">
-                    <div class="auth-feature-icon">
-                        <i class="bi bi-people-fill"></i>
-                    </div>
-                    <div class="auth-feature-text">
-                        <strong>Patient Records</strong>
-                        <span>Complete student & staff health profiles</span>
-                    </div>
-                </div>
-                <div class="auth-feature-item">
-                    <div class="auth-feature-icon">
-                        <i class="bi bi-calendar2-check-fill"></i>
-                    </div>
-                    <div class="auth-feature-text">
-                        <strong>Appointment Scheduling</strong>
-                        <span>Smart slot management with SMS alerts</span>
-                    </div>
-                </div>
-                <div class="auth-feature-item">
-                    <div class="auth-feature-icon">
-                        <i class="bi bi-capsule-pill"></i>
-                    </div>
-                    <div class="auth-feature-text">
-                        <strong>Medicine Inventory</strong>
-                        <span>Real-time stock tracking & expiry alerts</span>
-                    </div>
-                </div>
-                <div class="auth-feature-item">
-                    <div class="auth-feature-icon">
-                        <i class="bi bi-bar-chart-fill"></i>
-                    </div>
-                    <div class="auth-feature-text">
-                        <strong>Reports & Analytics</strong>
-                        <span>Daily, monthly & annual PDF/CSV exports</span>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Bottom footer --}}
-            <p class="auth-brand-footer">
-                &copy; {{ date('Y') }} Clinovia &mdash; All rights reserved
-            </p>
+        {{-- Logo row --}}
+        <div class="apb-top">
+            <div class="apb-logo"><i class="bi bi-plus-circle-fill"></i></div>
+            <span class="apb-wordmark">Clinovia</span>
         </div>
+
+        {{-- Headline + product-moment card --}}
+        <div class="apb-body">
+            <h2 class="apb-headline">Your clinic,<br>completely<br>organized.</h2>
+            <p class="apb-sub">Patient records, appointments, medicines, and AI — one platform for your entire school clinic.</p>
+
+            <div class="apb-card">
+                <div class="apb-card-header">
+                    <span class="apb-card-title">Today's Clinic</span>
+                    <span class="apb-card-date">{{ now()->format('M d, Y') }}</span>
+                </div>
+                <div class="apb-stats">
+                    <div class="apb-stat">
+                        <div class="apb-stat-val">14</div>
+                        <div class="apb-stat-lbl">Patients<br>Seen</div>
+                    </div>
+                    <div class="apb-stat">
+                        <div class="apb-stat-val">8</div>
+                        <div class="apb-stat-lbl">Appoint-<br>ments</div>
+                    </div>
+                    <div class="apb-stat">
+                        <div class="apb-stat-val">3</div>
+                        <div class="apb-stat-lbl">Medicines<br>Low</div>
+                    </div>
+                </div>
+                <div class="apb-entries">
+                    <div class="apb-entry">
+                        <div class="apb-av" style="background:hsl(201,85%,42%)">MR</div>
+                        <div class="apb-entry-info">
+                            <span class="apb-entry-name">Maria Reyes</span>
+                            <span class="apb-entry-sub">Check-up · 9:30 AM</span>
+                        </div>
+                        <span class="apb-badge apb-badge--green">Done</span>
+                    </div>
+                    <div class="apb-entry">
+                        <div class="apb-av" style="background:hsl(265,58%,52%)">JC</div>
+                        <div class="apb-entry-info">
+                            <span class="apb-entry-name">Juan Cruz</span>
+                            <span class="apb-entry-sub">Fever · 10:00 AM</span>
+                        </div>
+                        <span class="apb-badge apb-badge--blue">In Progress</span>
+                    </div>
+                    <div class="apb-entry">
+                        <div class="apb-av" style="background:hsl(38,80%,48%)">AP</div>
+                        <div class="apb-entry-info">
+                            <span class="apb-entry-name">Ana Palma</span>
+                            <span class="apb-entry-sub">Appointment · 11:00 AM</span>
+                        </div>
+                        <span class="apb-badge apb-badge--yel">Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Quote --}}
+        <div class="apb-bottom">
+            <p class="apb-quote">Clinovia cut our record-keeping time in half — and Cobi AI is genuinely useful for the entire clinic staff.</p>
+            <span class="apb-quote-attr">— School Clinic Nurse, Metro Manila</span>
+        </div>
+
     </div>
 
     {{-- ══════════════════════════════════════════════════════

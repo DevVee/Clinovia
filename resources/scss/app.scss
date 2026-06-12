@@ -801,146 +801,233 @@ footer {
 .auth-split {
     display: flex;
     min-height: 100vh;
-    background: #f0f4f8;
 }
 
-// ── Left brand panel
+// ── Left — Brand / visual panel
 .auth-panel-brand {
-    flex: 0 0 55%;
+    flex: 0 0 50%;
     position: relative;
-    background: linear-gradient(160deg,
-        hsl(201,85%,16%) 0%,
-        hsl(201,85%,26%) 45%,
-        hsl(213,77%,38%) 100%);
+    background: #07101f;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 2.5rem;
+    justify-content: space-between;
+    padding: 2.25rem 3rem 2.25rem;
     overflow: hidden;
     color: #fff;
 
-    // Decorative floating circles
+    // Coloured radial glows
     &::before {
         content: '';
         position: absolute;
-        width: 420px; height: 420px;
-        border-radius: 50%;
-        border: 2px solid rgba(255,255,255,.07);
-        top: -80px; left: -100px;
+        inset: 0;
+        background:
+            radial-gradient(ellipse at 15% 5%,  hsl(201,85%,39%,.32) 0%, transparent 52%),
+            radial-gradient(ellipse at 85% 95%,  hsl(265,58%,54%,.22) 0%, transparent 52%);
         pointer-events: none;
     }
+    // Dot-grid texture
     &::after {
         content: '';
         position: absolute;
-        width: 300px; height: 300px;
-        border-radius: 50%;
-        border: 2px solid rgba(255,255,255,.06);
-        bottom: -60px; right: -60px;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(255,255,255,.038) 1px, transparent 1px);
+        background-size: 30px 30px;
         pointer-events: none;
     }
 }
 
-.auth-brand-deco {
-    position: absolute;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,.06);
-    pointer-events: none;
-    &--sm  { width: 180px; height: 180px; top: 12%; right: 8%; }
-    &--md  { width: 260px; height: 260px; bottom: 15%; left: 5%; }
-}
-
-.auth-brand-inner {
-    position: relative;
-    z-index: 1;
-    max-width: 420px;
-    text-align: center;
-}
-
-.auth-brand-emblem {
-    width: 100px; height: 100px;
-    background: rgba(255,255,255,.12);
-    border: 2px solid rgba(255,255,255,.25);
-    border-radius: 28px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 1.75rem;
-    font-size: 2.8rem; color: #fff;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,.3),
-                0 0 0 1px rgba(255,255,255,.1);
-}
-
-.auth-brand-name {
-    font-family: 'Poppins', sans-serif;
-    font-size: 3rem;
-    font-weight: 800;
-    letter-spacing: -1px;
-    color: #fff;
-    margin-bottom: .25rem;
-    text-shadow: 0 2px 12px rgba(0,0,0,.25);
-}
-
-.auth-brand-tagline {
-    font-size: .9rem;
-    font-weight: 400;
-    color: rgba(255,255,255,.78);
-    margin-bottom: .5rem;
-    line-height: 1.5;
-}
-
-.auth-brand-org {
-    font-size: .78rem;
-    color: rgba(255,255,255,.55);
-    font-style: italic;
-    margin-bottom: 2.5rem;
-}
-
-.auth-features {
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
-    margin-bottom: 2.5rem;
-}
-
-.auth-feature-item {
+// ── Header: logo + wordmark
+.apb-top {
     display: flex;
     align-items: center;
-    gap: .875rem;
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 12px;
-    padding: .875rem 1.25rem;
-    text-align: left;
-    backdrop-filter: blur(4px);
-    transition: background var(--tf);
-    &:hover { background: rgba(255,255,255,.12); }
+    gap: .65rem;
+    position: relative;
+    z-index: 1;
 }
 
-.auth-feature-icon {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    background: rgba(255,255,255,.15);
+.apb-logo {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, hsl(201,85%,39%), hsl(265,58%,54%));
+    border-radius: 9px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; color: #fff;
+    font-size: .88rem; color: #fff;
+    box-shadow: 0 4px 14px hsl(201,85%,39%,.4);
     flex-shrink: 0;
 }
 
-.auth-feature-text {
-    strong {
-        display: block;
-        font-size: .83rem;
-        font-weight: 600;
-        color: #fff;
-    }
-    span {
-        font-size: .75rem;
-        color: rgba(255,255,255,.6);
-    }
+.apb-wordmark {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    color: #fff; letter-spacing: -.01em;
 }
 
-.auth-brand-footer {
-    font-size: .72rem;
-    color: rgba(255,255,255,.4);
+// ── Body: headline + product card
+.apb-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.75rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.apb-headline {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    letter-spacing: -.035em;
+    margin-bottom: .6rem;
+}
+
+.apb-sub {
+    font-size: .855rem;
+    color: rgba(255,255,255,.5);
+    line-height: 1.65;
+    margin-bottom: 1.75rem;
+    max-width: 340px;
+}
+
+// Product-moment card (glass)
+.apb-card {
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    padding: 1.2rem 1.35rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.04);
+    max-width: 390px;
+}
+
+.apb-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .95rem;
+}
+
+.apb-card-title {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: rgba(255,255,255,.45);
+}
+
+.apb-card-date {
+    font-size: .65rem;
+    color: rgba(255,255,255,.28);
+    font-family: 'Courier New', monospace;
+}
+
+.apb-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .45rem;
+    margin-bottom: .9rem;
+}
+
+.apb-stat {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 10px;
+    padding: .55rem .4rem;
+    text-align: center;
+}
+
+.apb-stat-val {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem; font-weight: 700;
+    color: #fff; line-height: 1;
+    margin-bottom: .2rem;
+}
+
+.apb-stat-lbl {
+    font-size: .56rem;
+    color: rgba(255,255,255,.38);
+    line-height: 1.3;
+}
+
+.apb-entries {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.apb-entry {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .4rem .5rem;
+    border-radius: 9px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+    transition: background .15s;
+    &:hover { background: rgba(255,255,255,.07); }
+}
+
+.apb-av {
+    width: 27px; height: 27px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .58rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+}
+
+.apb-entry-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.apb-entry-name {
+    display: block;
+    font-size: .73rem; font-weight: 600;
+    color: rgba(255,255,255,.82);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.apb-entry-sub {
+    display: block;
+    font-size: .61rem;
+    color: rgba(255,255,255,.38);
+}
+
+.apb-badge {
+    font-size: .58rem; font-weight: 600;
+    padding: .13rem .42rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.apb-badge--green { background: rgba(34,197,94,.15);   color: hsl(144,60%,55%); }
+.apb-badge--blue  { background: rgba(15,115,186,.22);  color: hsl(201,85%,65%); }
+.apb-badge--yel   { background: rgba(234,179,8,.15);   color: hsl(45,90%,60%);  }
+
+// ── Bottom: quote
+.apb-bottom {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding-top: 1.2rem;
+}
+
+.apb-quote {
+    font-size: .78rem;
+    color: rgba(255,255,255,.42);
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: .3rem;
+    &::before { content: '\201C'; }
+    &::after  { content: '\201D'; }
+}
+
+.apb-quote-attr {
+    font-size: .68rem;
+    color: rgba(255,255,255,.25);
+    font-weight: 500;
+    font-style: normal;
 }
 
 // ── Right form panel
@@ -1015,7 +1102,7 @@ footer {
     &:active { transform: translateY(0); }
 }
 
-// Mobile: stack vertically, show mini header
+// Mobile: collapse brand panel, show mini header
 @media (max-width: 991px) {
     .auth-panel-brand { display: none; }
     .auth-panel-form  { justify-content: flex-start; padding-top: 3rem; }
