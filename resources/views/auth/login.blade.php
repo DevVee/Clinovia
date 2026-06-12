@@ -188,6 +188,33 @@
                 </p>
             </form>
 
+            {{-- ── Demo Quick-Login ────────────────────────────────────────────── --}}
+            <div class="mt-4 pt-3" style="border-top:1px dashed hsl(210,20%,88%);">
+                <p class="text-center mb-2" style="font-size:.72rem; color:var(--text-muted); letter-spacing:.03em;">
+                    <i class="bi bi-play-circle-fill me-1" style="color:hsl(201,85%,39%);"></i>
+                    <strong>Portfolio Demo</strong> — one-click sample login
+                </p>
+                <div class="d-grid gap-2">
+                    <button type="button"
+                            class="btn btn-sm"
+                            style="border:1.5px solid hsl(201,85%,39%);color:hsl(201,85%,39%);border-radius:10px;font-size:.8rem;"
+                            onclick="quickLogin('admin@clinovia.app','Admin@2026!')">
+                        <i class="bi bi-shield-check me-1"></i>Admin Demo
+                        <span class="ms-1 opacity-75" style="font-size:.7rem;">full access</span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-sm btn-success"
+                            style="border-radius:10px;font-size:.8rem;"
+                            onclick="quickLogin('viewer@clinovia.app','Viewer@2026!')">
+                        <i class="bi bi-eye me-1"></i>Viewer Demo
+                        <span class="ms-1 opacity-75" style="font-size:.7rem;">read-only</span>
+                    </button>
+                </div>
+                <p class="text-center mt-2 mb-0" style="font-size:.68rem; color:var(--text-muted);">
+                    <i class="bi bi-database me-1"></i>Pre-loaded sample data &mdash; no real patient records
+                </p>
+            </div>
+
             {{-- Footer --}}
             <hr class="mt-4 mb-3" style="border-color: hsl(210,20%,92%);">
             <p class="text-center mb-0" style="font-size:.75rem; color:var(--text-muted);">
@@ -209,5 +236,12 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
     });
 });
+
+/* Quick-login: fills credentials and submits the login form */
+function quickLogin(email, password) {
+    document.getElementById('email').value    = email;
+    document.getElementById('password').value = password;
+    document.querySelector('form[method="POST"]').submit();
+}
 </script>
 </x-guest-layout>

@@ -29,6 +29,12 @@ export ASSET_URL
 SESSION_DRIVER="${SESSION_DRIVER:-file}"
 export SESSION_DRIVER
 
+# Default CACHE_STORE to 'file' — avoids any DB cache driver issues.
+# The 'database' cache store requires the cache table and can cause 500 errors
+# on authenticated pages if it fails (e.g. Setting::get() uses Cache::remember).
+CACHE_STORE="${CACHE_STORE:-file}"
+export CACHE_STORE
+
 # Ensure cookies are only sent over HTTPS when running on Render
 if [ -n "$RENDER_EXTERNAL_URL" ]; then
     SESSION_SECURE_COOKIE=true

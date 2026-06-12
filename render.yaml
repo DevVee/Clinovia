@@ -2,9 +2,10 @@
 # Docs: https://render.com/docs/blueprint-spec
 #
 # Demo credentials (seeded at Docker build time):
-#   Admin : admin@clinovia.app  /  Admin@2026!
-#   Nurse : nurse@clinovia.app  /  Nurse@2026!
-#   Staff : staff@clinovia.app  /  Staff@2026!
+#   Admin  : admin@clinovia.app   /  Admin@2026!
+#   Viewer : viewer@clinovia.app  /  Viewer@2026!   ← read-only demo account
+#   Nurse  : nurse@clinovia.app   /  Nurse@2026!
+#   Staff  : staff@clinovia.app   /  Staff@2026!
 
 services:
   - type: web
@@ -44,8 +45,9 @@ services:
         value: "120"
       - key: SESSION_SECURE_COOKIE
         value: "true"
+      # file cache: no DB table dependency — avoids 500s on authenticated pages
       - key: CACHE_STORE
-        value: database
+        value: file
       - key: QUEUE_CONNECTION
         value: database
 
@@ -92,6 +94,10 @@ services:
         value: staff@clinovia.app
       - key: STAFF_PASSWORD
         value: Staff@2026!
+      - key: VIEWER_EMAIL
+        value: viewer@clinovia.app
+      - key: VIEWER_PASSWORD
+        value: Viewer@2026!
 
 # ── Keep-alive cron job ───────────────────────────────────────────────────────
 # Pings the web service every 13 minutes so Render free tier never sleeps.

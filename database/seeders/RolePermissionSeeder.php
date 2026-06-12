@@ -89,6 +89,19 @@ class RolePermissionSeeder extends Seeder
             'view-consultations',
         ]);
 
+        // Viewer — read-only portfolio demo account; no writes, no admin
+        $viewer = Role::firstOrCreate(['name' => 'viewer', 'guard_name' => 'web']);
+        $viewer->syncPermissions([
+            'view-patients',
+            'view-appointments',
+            'view-consultations',
+            'view-medicines',
+            'view-inventory',
+            'view-dispensing',
+            'view-reports',
+            'use-ai-assistant',
+        ]);
+
         $this->command->info('Roles and permissions seeded successfully.');
     }
 }

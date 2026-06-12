@@ -51,9 +51,22 @@ class AdminUserSeeder extends Seeder
         );
         $staff->syncRoles('staff');
 
+        // ── Portfolio Viewer (read-only demo account) ─────────────────────────
+        $viewer = User::firstOrCreate(
+            ['email' => env('VIEWER_EMAIL', 'viewer@clinovia.app')],
+            [
+                'name'               => env('VIEWER_NAME', 'Portfolio Viewer'),
+                'password'           => Hash::make(env('VIEWER_PASSWORD', 'Viewer@2026!')),
+                'is_active'          => true,
+                'email_verified_at'  => now(),
+            ]
+        );
+        $viewer->syncRoles('viewer');
+
         $this->command->info('Seed users created. ⚠️  Change passwords immediately for production!');
-        $this->command->warn('  Admin : ' . env('ADMIN_EMAIL', 'admin@clinovia.app'));
-        $this->command->warn('  Nurse : ' . env('NURSE_EMAIL', 'nurse@clinovia.app'));
-        $this->command->warn('  Staff : ' . env('STAFF_EMAIL', 'staff@clinovia.app'));
+        $this->command->warn('  Admin  : ' . env('ADMIN_EMAIL',  'admin@clinovia.app'));
+        $this->command->warn('  Nurse  : ' . env('NURSE_EMAIL',  'nurse@clinovia.app'));
+        $this->command->warn('  Staff  : ' . env('STAFF_EMAIL',  'staff@clinovia.app'));
+        $this->command->warn('  Viewer : ' . env('VIEWER_EMAIL', 'viewer@clinovia.app'));
     }
 }

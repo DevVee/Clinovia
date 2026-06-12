@@ -329,6 +329,34 @@
                 </div>
             @endif
 
+            {{-- ── Demo / Viewer notice ──────────────────────────────────────────
+                 Shown to viewer-role users so they know the data is sample-only
+                 and they have read-only access. Dismissible, shown once per session.
+            ───────────────────────────────────────────────────────────────────── --}}
+            @hasrole('viewer')
+            <div class="alert alert-dismissible fade show mb-3" role="alert"
+                 style="border-radius:12px;border:1.5px solid hsl(201,85%,39%);
+                        background:linear-gradient(135deg,hsla(201,85%,39%,.07),hsla(265,58%,54%,.07));">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge" style="background:hsl(201,85%,39%);font-size:.68rem;">DEMO</span>
+                    <span style="font-size:.85rem;">
+                        <strong>Viewer Account</strong> —
+                        you have <strong>read-only</strong> access to pre-loaded sample data.
+                        No changes you make will be saved.
+                    </span>
+                    <a href="{{ route('login') }}" class="ms-auto btn btn-sm btn-outline-primary"
+                       style="font-size:.72rem;border-radius:8px;"
+                       onclick="event.preventDefault();document.getElementById('demo-logout').submit();">
+                        <i class="bi bi-box-arrow-right me-1"></i>Switch Account
+                    </a>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <form id="demo-logout" method="POST" action="{{ route('logout') }}" style="display:none;">
+                @csrf
+            </form>
+            @endhasrole
+
             @yield('content')
         </main>
 
