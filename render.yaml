@@ -42,7 +42,7 @@ services:
       # Changing this key invalidates ALL active sessions and CSRF tokens.
       # Mark this as a Render "secret" env var to hide it from the dashboard log.
       - key: APP_KEY
-        value: "base64:REPLACE_WITH_OUTPUT_OF_php_artisan_key_generate_show=="
+        value: "base64:/UKvUOFicELi+s55imCCqqwTqQEHanJ8PDyhP4HdjNo="
 
       # FIX: Explicit APP_URL — do not rely solely on RENDER_EXTERNAL_URL.
       # Replace with your actual Render service URL (e.g. https://clinovia.onrender.com).
