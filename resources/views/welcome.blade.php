@@ -891,36 +891,6 @@ footer{background:var(--dark-2);border-top:1px solid var(--b-dark);padding:4.5re
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════
-     TESTIMONIALS
-══════════════════════════════════════════════════════════════ -->
-<section class="section" id="testimonials">
-  <div class="si">
-    <div class="sh c reveal">
-      <span class="eyebrow">Testimonials</span>
-      <h2 class="sec-h2">Trusted by clinic staff</h2>
-      <p class="sec-p">Feedback from the nurses and administrators who use Clinovia every day.</p>
-    </div>
-    <div class="test-grid">
-      <div class="tc reveal d1">
-        <div class="tc-stars">★★★★★</div>
-        <div class="tc-quote">Before Clinovia, we kept everything in notebooks and Excel sheets. Now I can pull up any patient's full history in seconds — allergies, past consultations, medicines dispensed. The time savings alone justify the switch.</div>
-        <div class="tc-auth"><div class="tc-av">MR</div><div><div class="tc-name">Maria R.</div><div class="tc-role">School Clinic Nurse, Senior High School</div></div></div>
-      </div>
-      <div class="tc reveal d2">
-        <div class="tc-stars">★★★★★</div>
-        <div class="tc-quote">The SMS appointment reminders have cut our no-shows by more than half. Parents actually show up now because they get an automatic reminder the day before. Cobi AI even helped me understand a patient's medication interaction.</div>
-        <div class="tc-auth"><div class="tc-av">JA</div><div><div class="tc-name">James A.</div><div class="tc-role">Clinic Administrator, Elementary Department</div></div></div>
-      </div>
-      <div class="tc reveal d3">
-        <div class="tc-stars">★★★★★</div>
-        <div class="tc-quote">The audit log gave us complete visibility during our accreditation inspection. Every record access, every update, timestamped with the user's name. The inspector was genuinely impressed — she called it "clinic-grade accountability."</div>
-        <div class="tc-auth"><div class="tc-av">ST</div><div><div class="tc-name">Sarah T.</div><div class="tc-role">Medical Director, Integrated School Campus</div></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════
      FAQ
 ══════════════════════════════════════════════════════════════ -->
 <section class="section bg-sl" id="faq">
@@ -1019,7 +989,7 @@ footer{background:var(--dark-2);border-top:1px solid var(--b-dark);padding:4.5re
       </div>
     </div>
     <div class="ft-bot">
-      <div class="ft-copy">&copy; {{ date('Y') }} <strong>Clinovia</strong> &mdash; Smart School Clinic Management System</div>
+      <div class="ft-copy">&copy; {{ date('Y') }} <strong>Clinovia</strong> &mdash; Designed &amp; built by <strong>Prince Arvee Avena</strong></div>
       <div class="ft-bot-links">
         <a href="#home">Back to top &uarr;</a>
         <a href="/health">System Status</a>
