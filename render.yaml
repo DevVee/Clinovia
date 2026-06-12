@@ -106,7 +106,9 @@ services:
       - key: MAIL_MAILER
         value: log
 
-      # SMS / AI integrations — leave blank unless you add real keys
+      # AI — Groq API key for Cobi assistant.
+      # Set the real key as a secret in the Render Dashboard (Environment tab)
+      # or via the Render API — never commit secrets to this file.
       - key: GROQ_API_KEY
         value: ""
       - key: SEMAPHORE_API_KEY

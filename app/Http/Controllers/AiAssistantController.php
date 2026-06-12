@@ -26,29 +26,38 @@ class AiAssistantController extends Controller
     {
         $this->authorize('use-ai-assistant');
 
-        $request->validate(['message' => ['required', 'string', 'max:2000']]);
-
-        // Pass last 5 for context
-        $history = AiConversation::where('user_id', auth()->id())
-            ->latest()
-            ->limit(5)
-            ->get();
-
-        $response = $this->ai->chat($request->message, $history);
-
-        $convo = AiConversation::create([
-            'user_id'  => auth()->id(),
-            'message'  => $request->message,
-            'response' => $response,
+        $request->validate([
+            'message' => ['required', 'string', 'max:4000'],
         ]);
 
+        // Pass last 12 turns for context (AiAssistantService::HISTORY_LIMIT)
+        $history = AiConversation::where('user_id', auth()->id())
+            ->latest()
+            ->limit(12)
+            ->get();
+
+        /** @var string $message */
+        $message = $request->input('message');
+
+        $result = $this->ai->chat($message, $history);
+
+        $convo = AiConversation::create([
+            'user_id'     => auth()->id(),
+            'message'     => $message,
+            'response'    => $result['response'],
+            'tokens_used' => $result['tokens'],
+        ]);
+
+        /** @var int $convoId */
+        $convoId = $convo->id;
+
         return response()->json([
-            'response' => $response,
-            'id'       => $convo->id,
+            'response' => $result['response'],
+            'id'       => $convoId,
         ]);
     }
 
-    public function clear(Request $request)
+    public function clear()
     {
         $this->authorize('use-ai-assistant');
 

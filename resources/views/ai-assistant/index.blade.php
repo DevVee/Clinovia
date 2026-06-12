@@ -357,7 +357,7 @@
                 <div class="fw-semibold">Cobi</div>
                 <div class="d-flex align-items-center gap-2">
                     <span class="cobi-status-dot"></span>
-                    <span class="text-muted" style="font-size:.73rem;">Online &bull; Groq API &bull; llama-3.3-70b</span>
+                    <span class="text-muted" style="font-size:.73rem;">Online &bull; Groq API &bull; gpt-oss-120b</span>
                 </div>
             </div>
             <div class="text-muted small d-none d-md-block">
@@ -406,9 +406,9 @@
             <div class="cobi-input-wrap">
                 <textarea id="cobiInput"
                           class="cobi-textarea"
-                          placeholder="Ask Cobi anything about Clinovia or clinic operations…"
+                          placeholder="Ask Cobi anything — clinic system, technical issues, medical terms, research…"
                           rows="1"
-                          maxlength="2000"
+                          maxlength="4000"
                           autocomplete="off"></textarea>
                 <button class="cobi-send-btn" id="sendBtn" disabled>
                     <i class="bi bi-send-fill" id="sendIcon"></i>
@@ -419,18 +419,20 @@
                     'How do I add a new patient?',
                     'How to approve an appointment?',
                     'How to dispense medicine?',
-                    'Explain the dispensing workflow',
                     'What reports are available?',
+                    'Explain a common medical term',
+                    'Help me troubleshoot a technical issue',
                     'How do SMS notifications work?',
+                    'Explain the audit log',
                 ] as $prompt)
                 <button class="cobi-quick-btn" data-prompt="{{ $prompt }}">{{ $prompt }}</button>
                 @endforeach
             </div>
             <div class="d-flex justify-content-between mt-2">
                 <span class="text-muted" style="font-size:.68rem;">
-                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Powered by Groq
+                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Powered by Groq &bull; gpt-oss-120b
                 </span>
-                <span class="text-muted" style="font-size:.68rem;" id="charCount">0/2000</span>
+                <span class="text-muted" style="font-size:.68rem;" id="charCount">0/4000</span>
             </div>
         </div>
 
@@ -453,7 +455,7 @@ cobiInput.addEventListener('input', function () {
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     sendBtn.disabled  = !this.value.trim();
-    document.getElementById('charCount').textContent = `${this.value.length}/2000`;
+    document.getElementById('charCount').textContent = `${this.value.length}/4000`;
 });
 
 // ── Send on Enter (Shift+Enter = newline) ──────────────────
