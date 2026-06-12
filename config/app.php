@@ -122,7 +122,20 @@ return [
 
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+        'store'  => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Trusted Proxies
+    |--------------------------------------------------------------------------
+    |
+    | Set to '*' to trust all proxies (e.g. Render, Cloudflare, shared hosting).
+    | For a known proxy IP (e.g. 10.0.0.1), set TRUST_PROXIES=10.0.0.1.
+    | The TrustProxies middleware reads this via config() so it works
+    | correctly even when config:cache is active.
+    |
+    */
+    'trust_proxies' => env('TRUST_PROXIES', '*'),
 
 ];

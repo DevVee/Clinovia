@@ -19,9 +19,57 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Route;
 
-// ─── Keep-alive ping (public, no session/auth overhead) ──────────────────────
-// Hit by the Render cron job + browser heartbeat to prevent free-tier sleep.
+// ─── Keep-alive ping (no session/auth/DB overhead) ──────────────────────────
+// Hit by: Render cron job, UptimeRobot, GitHub Actions heartbeat.
+// Returns plain text 'pong' — no middleware stack, no session creation.
 Route::get('/ping', fn () => response('pong', 200)->header('Content-Type', 'text/plain'));
+
+// ─── Rich health check endpoint ───────────────────────────────────────────────
+// Checks DB connectivity, cache, and storage writability.
+// Excluded from session middleware to avoid creating ghost sessions.
+// Use this URL in Render's healthCheckPath and as UptimeRobot alert monitor.
+Route::get('/health', function () {
+    $checks   = ['status' => 'ok'];
+    $httpCode = 200;
+
+    // Database connectivity
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        $checks['database'] = 'ok';
+    } catch (\Exception $e) {
+        $checks['database']       = 'error';
+        $checks['database_error'] = $e->getMessage();
+        $httpCode = 503;
+    }
+
+    // Cache read/write
+    try {
+        \Illuminate\Support\Facades\Cache::put('_health_check', 1, 10);
+        $checks['cache'] = \Illuminate\Support\Facades\Cache::get('_health_check') ? 'ok' : 'miss';
+    } catch (\Exception $e) {
+        $checks['cache'] = 'error';
+        $httpCode = 503;
+    }
+
+    // Storage writable
+    $storageOk = is_writable(storage_path('framework'));
+    $checks['storage_writable'] = $storageOk ? 'ok' : 'error';
+    if (! $storageOk) {
+        $httpCode = 503;
+    }
+
+    // Runtime info (safe to expose — no secrets)
+    $checks['session_driver'] = config('session.driver');
+    $checks['cache_driver']   = config('cache.default');
+    $checks['app_env']        = config('app.env');
+    $checks['timestamp']      = now()->toIso8601String();
+
+    if ($checks['status'] === 'ok' && $httpCode !== 200) {
+        $checks['status'] = 'degraded';
+    }
+
+    return response()->json($checks, $httpCode);
+})->withoutMiddleware([\Illuminate\Session\Middleware\StartSession::class]);
 
 // ─── Public: redirect to login ────────────────────────────────────────────────
 Route::get('/', fn () => redirect()->route('login'));

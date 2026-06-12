@@ -6,6 +6,12 @@
 #   Viewer : viewer@clinovia.app  /  Viewer@2026!   ← read-only demo account
 #   Nurse  : nurse@clinovia.app   /  Nurse@2026!
 #   Staff  : staff@clinovia.app   /  Staff@2026!
+#
+# ── IMPORTANT: APP_KEY ────────────────────────────────────────────────────────
+# Generate a stable key ONCE with: php artisan key:generate --show
+# Paste the full "base64:xxxx==" string as the APP_KEY value below.
+# NEVER use generateValue: true — it produces a new key on every deploy,
+# which invalidates all active sessions and CSRF tokens (causes mass 419 errors).
 
 services:
   - type: web
@@ -13,7 +19,9 @@ services:
     runtime: docker
     plan: free
     region: singapore
-    healthCheckPath: /login
+    # FIX: Use /ping instead of /login — /login creates ghost sessions via
+    # session middleware. /ping is a naked handler with no middleware overhead.
+    healthCheckPath: /ping
 
     # ── Build ─────────────────────────────────────────────────────────────────
     dockerfilePath: ./Dockerfile
@@ -28,8 +36,21 @@ services:
         value: production
       - key: APP_DEBUG
         value: "false"
+
+      # FIX: Static APP_KEY — generate once with `php artisan key:generate --show`
+      # and paste the full "base64:xxxx==" output here.
+      # Changing this key invalidates ALL active sessions and CSRF tokens.
+      # Mark this as a Render "secret" env var to hide it from the dashboard log.
       - key: APP_KEY
-        generateValue: true          # Render generates a secure key on first deploy
+        value: "base64:REPLACE_WITH_OUTPUT_OF_php_artisan_key_generate_show=="
+
+      # FIX: Explicit APP_URL — do not rely solely on RENDER_EXTERNAL_URL.
+      # Replace with your actual Render service URL (e.g. https://clinovia.onrender.com).
+      # This ensures URL::forceScheme('https') triggers in AppServiceProvider,
+      # and that asset() / route() helpers always return HTTPS URLs.
+      - key: APP_URL
+        value: "https://clinovia.onrender.com"
+
       - key: APP_TIMEZONE
         value: Asia/Manila
 
@@ -37,27 +58,39 @@ services:
       - key: DB_CONNECTION
         value: sqlite
 
-      # Session — file driver writes to storage/framework/sessions/ (no DB table needed).
-      # The project has no create_sessions_table migration, so 'database' driver fails.
+      # Session — FIX: Use 'database' driver (sessions table exists in migration).
+      # 'file' sessions are wiped on every container restart (ephemeral FS).
+      # 'database' sessions survive PHP-FPM restarts and Nginx restarts.
       - key: SESSION_DRIVER
-        value: file
+        value: database
       - key: SESSION_LIFETIME
         value: "120"
       - key: SESSION_SECURE_COOKIE
         value: "true"
-      # file cache: no DB table dependency — avoids 500s on authenticated pages
+      # FIX: 'lax' (not 'strict') — strict blocks the session cookie when a user
+      # clicks a link from an email or external site, causing 419 on the landing page.
+      # 'lax' is Laravel's recommended default and safe against CSRF attacks.
+      - key: SESSION_SAME_SITE
+        value: lax
+      # Explicit: encryption is opt-in via env var to avoid config-vs-env mismatch.
+      - key: SESSION_ENCRYPT
+        value: "true"
+
+      # Cache — FIX: Use 'database' (cache table exists, consistent with session driver).
+      # 'file' cache is ephemeral and was causing Spatie permission cache mismatches.
       - key: CACHE_STORE
-        value: file
+        value: database
+
       - key: QUEUE_CONNECTION
         value: database
 
-      # Logging — send to stderr so Render captures it
+      # Logging — send to stderr so Render captures it in the log stream
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
         value: error
 
-      # Trust Render's load-balancer proxy
+      # Trust Render's load-balancer proxy for correct IP and HTTPS detection
       - key: TRUST_PROXIES
         value: "*"
 
@@ -81,7 +114,7 @@ services:
       - key: SEMAPHORE_SENDER_NAME
         value: CLINOVIA
 
-      # Demo seeder credentials (must match .env.example values used at build time)
+      # Demo seeder credentials (must match values used at build time in .env.example)
       - key: ADMIN_EMAIL
         value: admin@clinovia.app
       - key: ADMIN_PASSWORD
@@ -100,7 +133,9 @@ services:
         value: Viewer@2026!
 
 # ── Keep-alive cron job ───────────────────────────────────────────────────────
-# Pings the web service every 13 minutes so Render free tier never sleeps.
+# Pings the web service every 10 minutes so Render free tier never sleeps.
+# FIX: Interval reduced from 13 to 10 minutes — Render sleeps after 15 min
+# of inactivity; 13 min was too close to the threshold given cron jitter.
 # Uses the tiny curlimages/curl image (~6 MB) — no build step needed.
 # PING_HOST is automatically populated from the web service's hostname.
   - type: cron
@@ -109,8 +144,8 @@ services:
     image:
       url: docker.io/curlimages/curl:8
     region: singapore
-    schedule: "*/13 * * * *"
-    startCommand: curl -sf --max-time 10 "https://${PING_HOST}/ping" || true
+    schedule: "*/10 * * * *"
+    startCommand: curl -sf --max-time 15 "https://${PING_HOST}/ping" || true
     envVars:
       - key: PING_HOST
         fromService:

@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Session\TokenMismatchException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -32,5 +33,29 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // ── Log every 419 TokenMismatch with full context ─────────────────────
+        // This makes CSRF/session issues diagnosable in Render's log stream
+        // without impacting users (returns null = let Laravel render default 419).
+        $exceptions->render(function (
+            TokenMismatchException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            \Illuminate\Support\Facades\Log::warning('419 CSRF TokenMismatch', [
+                'url'         => $request->fullUrl(),
+                'method'      => $request->method(),
+                'ip'          => $request->ip(),
+                'user_id'     => optional(auth()->user())->id,
+                'user_agent'  => $request->userAgent(),
+                'referer'     => $request->header('Referer'),
+                'session_id'  => $request->hasSession()
+                                   ? $request->session()->getId()
+                                   : null,
+                'has_token'   => $request->hasSession()
+                                   ? (bool) $request->session()->token()
+                                   : false,
+                'session_drv' => config('session.driver'),
+            ]);
+
+            return null; // Let Laravel render the default 419 page
+        });
     })->create();

@@ -18,6 +18,8 @@ return [
     |
     */
 
+    // Production: Render uses SESSION_DRIVER=database (sessions table exists in migration).
+    // Local: SESSION_DRIVER=database in .env — same driver everywhere.
     'driver' => env('SESSION_DRIVER', 'database'),
 
     /*
@@ -47,10 +49,10 @@ return [
     |
     */
 
-    // SECURITY FIX: Encrypt session data at rest in the database.
-    // Anyone with DB read access cannot read active session tokens.
-    // Set SESSION_ENCRYPT=false only for local development if needed.
-    'encrypt' => env('SESSION_ENCRYPT', true),
+    // Default false — encryption is opt-in via SESSION_ENCRYPT=true in render.yaml.
+    // Defaulting to true caused silent session failures when APP_KEY changed between
+    // container boots (Render's generateValue: true produced a new key each deploy).
+    'encrypt' => env('SESSION_ENCRYPT', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -172,9 +174,10 @@ return [
     |
     */
 
-    // SECURITY FIX: Default to true so session cookies are HTTPS-only.
-    // Set SESSION_SECURE_COOKIE=false in .env only for local HTTP development.
-    'secure' => env('SESSION_SECURE_COOKIE', true),
+    // Default false so local HTTP dev works without extra config.
+    // start.sh forces SESSION_SECURE_COOKIE=true on Render (HTTPS only).
+    // render.yaml also sets SESSION_SECURE_COOKIE=true explicitly.
+    'secure' => env('SESSION_SECURE_COOKIE', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -204,9 +207,13 @@ return [
     |
     */
 
-    // SECURITY FIX: Stricter SameSite policy for a closed-staff system with no
-    // cross-origin form submissions. 'strict' prevents CSRF via any cross-site nav.
-    'same_site' => env('SESSION_SAME_SITE', 'strict'),
+    // 'lax' is Laravel's recommended default and the correct setting here.
+    // 'strict' was causing 419 errors when users navigated to the app from an
+    // external link (email, bookmark) because the session cookie was not sent
+    // on the initial cross-site top-level navigation, making CSRF validation fail.
+    // 'lax' sends the cookie on top-level GET navigations (safe) but blocks it
+    // on cross-site POST requests (the actual CSRF attack vector).
+    'same_site' => env('SESSION_SAME_SITE', 'lax'),
 
     /*
     |--------------------------------------------------------------------------

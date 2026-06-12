@@ -11,8 +11,13 @@ use Illuminate\Http\Request;
  *   - Request::secure()  returns true when the proxy terminates HTTPS
  *   - Rate limiters      throttle per real client, not per proxy
  *
- * Set TRUST_PROXIES=* in .env to trust all proxies (Cloudflare, shared hosting).
- * For a known proxy IP (e.g. 10.0.0.1), set TRUST_PROXIES=10.0.0.1 instead.
+ * TRUST_PROXIES is configured in config/app.php (reads from env).
+ * The middleware reads config() — not env() — so it works correctly
+ * even when `php artisan config:cache` is active (env() returns null
+ * for variables that aren't real OS env vars after caching).
+ *
+ * Set TRUST_PROXIES=* in .env / render.yaml to trust all proxies.
+ * For a known proxy IP (e.g. 10.0.0.1), set TRUST_PROXIES=10.0.0.1.
  */
 class TrustProxies extends Middleware
 {
@@ -37,8 +42,9 @@ class TrustProxies extends Middleware
 
     public function __construct()
     {
-        // Read from .env: '*' = trust all, or comma-separated IPs
-        $value = env('TRUST_PROXIES', '*');
-        $this->proxies = $value === '*' ? '*' : array_map('trim', explode(',', $value));
+        // Use config() — not env() — so this works with config:cache active.
+        // env() returns null for variables not set as real OS env vars after caching.
+        $value = config('app.trust_proxies', '*');
+        $this->proxies = $value === '*' ? '*' : array_map('trim', explode(',', (string) $value));
     }
 }
